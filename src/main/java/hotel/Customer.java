@@ -7,40 +7,43 @@ import java.util.Date;
  */
 public class Customer {
 
-    static Long id;
-    static String name;
-    static String Address;
-    static Date BirthDate;
+    private Long id;
+    private String name;
+    private String address;
+    private Date birthDate;
 
-    public static Long getId() {
+    public Customer(String name, String adrress) {
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public static void setId(Long id) {
-        Customer.id = id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public static String getName() {
+    public String getName() {
         return name;
     }
 
-    public static void setName(String name) {
-        Customer.name = name;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public static String getAddress() {
-        return Address;
+    public String getAddress() {
+        return address;
     }
 
-    public static void setAddress(String address) {
-        Address = address;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public static Date getBirthDate() {
-        return BirthDate;
+    public Date getBirthDate() {
+        return birthDate;
     }
 
-    public static void setBirthDate(Date birthDate) {
-        BirthDate = birthDate;
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 }
