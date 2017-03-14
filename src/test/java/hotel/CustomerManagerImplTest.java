@@ -37,7 +37,9 @@ public class CustomerManagerImplTest {
 
     @Test
     public void find() throws Exception {
-        assertNotNull("Customer has not ID", customerManager.findByName("Tomas").getId());
+        Customer tomas = customerManager.findByName("Tomas");
+        assertNotNull("Customer has not ID", tomas.getId());
+        assertSame(tomas, customerManager.find(tomas.getId()));
     }
 
     @Test
