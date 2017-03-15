@@ -6,9 +6,6 @@ import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by uzivatel on 14.3.2017.
- */
 public class RoomManagerImplTest {
 
     RoomManagerImpl roomManager;
