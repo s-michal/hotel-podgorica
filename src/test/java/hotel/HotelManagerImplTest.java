@@ -1,49 +1,98 @@
 package hotel;
 
-import org.junit.Before;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import hotel.exceptions.ReservationNotFoundException;
 import org.junit.Test;
-
-
-import static org.junit.Assert.*;
 
 public class HotelManagerImplTest
 {
 
-    private HotelManagerImpl manager;
-
-    private Reservation reservation;
-
-    @Before
-    public void setUp() throws Exception
-    {
-        manager = new HotelManagerImpl();
-
-        reservation = new Reservation();
-        manager.placeReservation(new Reservation());
-        manager.placeReservation(reservation);
-    }
-
     @Test
     public void create() throws Exception
     {
+        HotelManagerImpl manager = new HotelManagerImpl();
+        manager.placeReservation(new Reservation());
+        manager.placeReservation(new Reservation());
+
         Reservation reservation = new Reservation();
         manager.placeReservation(reservation);
 
-        assertSame("Number of reservations didn't increment.", 3, manager.findAll().size());
+        assertThat(manager.findAll())
+                .hasSize(3);
+
+        assertThat(reservation.getId())
+                .isNotNull();
+    }
+
+    @Test
+    public void createWithNull() throws Exception
+    {
+        HotelManagerImpl manager = new HotelManagerImpl();
+
+        assertThatThrownBy(() -> manager.placeReservation(null))
+                .isInstanceOf(NullPointerException.class);
+
+        assertThat(manager.findAll())
+                .isEmpty();
     }
 
     @Test
     public void find() throws Exception
     {
-        Reservation reservation = manager.find(1);
-        assertNotSame("Manager doesn't contain reservation #1", null, reservation);
+        HotelManagerImpl manager = new HotelManagerImpl();
+        manager.placeReservation(new Reservation());
+
+        Reservation reservation = new Reservation();
+        manager.placeReservation(reservation);
+
+        assertThat(manager.find(reservation.getId()))
+                .isEqualTo(reservation);
+    }
+
+    @Test
+    public void findForUnknownIdThrowsException() throws Exception
+    {
+        HotelManagerImpl manager = new HotelManagerImpl();
+        manager.placeReservation(new Reservation());
+
+        assertThatThrownBy(() -> manager.find(666))
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test
     public void delete() throws Exception
     {
+        HotelManagerImpl manager = new HotelManagerImpl();
+        Reservation reservation = new Reservation();
+
+        manager.placeReservation(reservation);
         manager.delete(reservation);
-        assertSame("Number of reservations didn't decrement.", 1, manager.findAll());
+
+        assertThat(manager.findAll())
+                .isEmpty();
+    }
+
+    @Test
+    public void deleteOfNotPersistedReservationThrowsException() throws Exception
+    {
+        HotelManagerImpl manager = new HotelManagerImpl();
+
+        assertThatThrownBy(() -> manager.delete(new Reservation()))
+                .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @Test
+    public void reservationForNonexistingRoomAreNone() throws Exception
+    {
+        HotelManagerImpl manager = new HotelManagerImpl();
+
+        Room room = mock(Room.class);
+        when(room.getId()).thenReturn(null);
+
+        assertThat(manager.findReservationByRoom(room))
+                .isEmpty(); // Or throw exception?
     }
 
 }

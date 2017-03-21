@@ -6,6 +6,11 @@ package hotel;
 public class Reservation
 {
 
+    public Long getId()
+    {
+        return null;
+    }
+
     public Room getRoom()
     {
         return null;

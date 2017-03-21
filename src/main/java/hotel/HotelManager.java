@@ -1,5 +1,7 @@
 package hotel;
 
+import hotel.exceptions.ReservationNotFoundException;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.List;
 public interface HotelManager
 {
 
-    public Reservation find(long id);
+    public Reservation find(long id) throws ReservationNotFoundException;
 
     public List<Reservation> findAll();
 
