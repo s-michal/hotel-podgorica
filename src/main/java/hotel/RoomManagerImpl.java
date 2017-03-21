@@ -6,33 +6,41 @@ import java.util.List;
 /**
  * Created by uzivatel on 14.3.2017.
  */
-public class RoomManagerImpl implements RoomManager {
+public class RoomManagerImpl implements RoomManager
+{
 
-    public void create(Room room) {
-
-    }
-
-    public void update(Room room) {
+    public void create(Room room)
+    {
 
     }
 
-    public Room find(Long id) {
+    public void update(Room room)
+    {
+
+    }
+
+    public Room find(Long id)
+    {
         return null;
     }
 
-    public List<Room> findAll() {
+    public List<Room> findAll()
+    {
         return null;
     }
 
-    public List<Room> findAllByFloor(int floor) {
+    public List<Room> findAllByFloor(int floor)
+    {
         return null;
     }
 
-    public List<Room> findAllInPrice(BigDecimal price) {
+    public List<Room> findAllInPrice(BigDecimal price)
+    {
         return null;
     }
 
-    public void delete(Room room) {
+    public void delete(Room room)
+    {
 
     }
 }

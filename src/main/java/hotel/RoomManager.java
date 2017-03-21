@@ -6,7 +6,8 @@ import java.util.List;
 /**
  * Created by uzivatel on 14.3.2017.
  */
-public interface RoomManager {
+public interface RoomManager
+{
 
     void create(Room room);
 

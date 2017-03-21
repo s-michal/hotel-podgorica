@@ -5,7 +5,8 @@ import java.util.List;
 /**
  * Created by xsustera on 8.3.17.
  */
-public interface CustomerManager {
+public interface CustomerManager
+{
 
     void create(Customer customer);
 
