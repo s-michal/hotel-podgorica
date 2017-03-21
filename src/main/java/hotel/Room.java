@@ -5,7 +5,8 @@ import java.math.BigDecimal;
 /**
  * Created by uzivatel on 14.3.2017.
  */
-public class Room {
+public class Room
+{
 
     private Long id;
     private Long number;
@@ -13,46 +14,61 @@ public class Room {
     private int floor;
     private BigDecimal pricePerDay;
 
-    public Room() {
+    public Room(Long number, int capacity, int floor, BigDecimal pricePerDay)
+    {
+        this.number = number;
+        this.capacity = capacity;
+        this.floor = floor;
+        this.pricePerDay = pricePerDay;
     }
 
-    public Long getId() {
+    public Long getId()
+    {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Long id)
+    {
         this.id = id;
     }
 
-    public Long getNumber() {
+    public Long getNumber()
+    {
         return number;
     }
 
-    public void setNumber(Long number) {
+    public void setNumber(Long number)
+    {
         this.number = number;
     }
 
-    public int getCapacity() {
+    public int getCapacity()
+    {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(int capacity)
+    {
         this.capacity = capacity;
     }
 
-    public int getFloor() {
+    public int getFloor()
+    {
         return floor;
     }
 
-    public void setFloor(int floor) {
+    public void setFloor(int floor)
+    {
         this.floor = floor;
     }
 
-    public BigDecimal getPricePerDay() {
+    public BigDecimal getPricePerDay()
+    {
         return pricePerDay;
     }
 
-    public void setPricePerDay(BigDecimal pricePerDay) {
+    public void setPricePerDay(BigDecimal pricePerDay)
+    {
         this.pricePerDay = pricePerDay;
     }
 }

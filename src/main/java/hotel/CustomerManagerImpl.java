@@ -5,29 +5,36 @@ import java.util.List;
 /**
  * Created by xsustera on 8.3.17.
  */
-public class CustomerManagerImpl implements CustomerManager {
+public class CustomerManagerImpl implements CustomerManager
+{
 
-    public void create(Customer customer) {
-
-    }
-
-    public void update(Customer customer) {
+    public void create(Customer customer)
+    {
 
     }
 
-    public Customer find(Long id) {
+    public void update(Customer customer)
+    {
+
+    }
+
+    public Customer find(Long id)
+    {
         return null;
     }
 
-    public Customer findByName(String name) {
+    public Customer findByName(String name)
+    {
         return null;
     }
 
-    public List<Customer> findAll() {
+    public List<Customer> findAll()
+    {
         return null;
     }
 
-    public void delete(Customer customer) {
+    public void delete(Customer customer)
+    {
 
     }
 }
