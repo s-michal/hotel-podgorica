@@ -1,10 +1,20 @@
 package hotel;
 
+import java.util.Objects;
+
 /**
  * Created by fmasa on 15.3.17.
  */
 public class Reservation
 {
+
+    private Room room;
+
+    public Reservation(Room room)
+    {
+        Objects.requireNonNull(room);
+        this.room = room;
+    }
 
     public Long getId()
     {
@@ -13,7 +23,7 @@ public class Reservation
 
     public Room getRoom()
     {
-        return null;
+        return room;
     }
 
 }

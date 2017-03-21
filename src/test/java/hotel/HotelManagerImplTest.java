@@ -95,4 +95,21 @@ public class HotelManagerImplTest
                 .isEmpty(); // Or throw exception?
     }
 
+    @Test
+    public void reservationsForRoom()
+    {
+        HotelManagerImpl manager = new HotelManagerImpl();
+
+        Room room = mock(Room.class);
+        when(room.getId()).thenReturn(new Long(10));
+
+        Reservation first = new Reservation(room);
+        Reservation second = new Reservation(room);
+        manager.placeReservation(first);
+        manager.placeReservation(second);
+
+        assertThat(manager.findReservationByRoom(room))
+                .containsExactlyInAnyOrder(first, second);
+    }
+
 }
