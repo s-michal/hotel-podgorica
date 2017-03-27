@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 public class RoomManagerImplTest
 {
@@ -31,18 +31,18 @@ public class RoomManagerImplTest
         allRoom.add(one);
         allRoom.add(two);
         allRoom.add(three);
-        assertEquals("In database is not created all rooms.", allRoom, roomManager.findAll());
-        assertEquals("Find by all is not implemented correctly.", 2, roomManager.findAllByFloor(2).size());
+        assertThat(roomManager.findAll()).isEqualTo(allRoom);
+        assertThat(roomManager.findAllByFloor(2)).hasSize(2);
         Long id = null;
         Room roomOne = null;
         for (Room room : roomManager.findAllByFloor(1))
         {
             roomOne = room;
             id = room.getId();
-            assertNotNull("ID of room isn't exist.", id);
+            assertThat(id).isNotNull();
         }
-        assertEquals("Room with this ID isn't same.", roomOne, roomManager.find(id));
-        assertEquals(2, roomManager.findAllInPrice(BigDecimal.valueOf(800)));
+        assertThat(roomManager.find(id)).isEqualTo(roomOne);
+        assertThat(roomManager.findAllInPrice(BigDecimal.valueOf(800))).hasSize(2);
     }
 
     @Test
@@ -54,10 +54,10 @@ public class RoomManagerImplTest
         roomManager.update(room);
         for (Room testRoom : roomManager.findAll())
         {
-            assertEquals("Rooms aren't same, update wasn't correct.", room, testRoom);
+            assertThat(testRoom).isEqualTo(room);
         }
         roomManager.delete(room);
-        assertNull("Room wasn't deleted.", roomManager.findAll());
+        assertThat(roomManager.findAll()).hasSize(0);
     }
 
     @Test
@@ -65,27 +65,10 @@ public class RoomManagerImplTest
     {
         Room one = new Room((long) 1, 4, 3, BigDecimal.valueOf(1400));
         roomManager.create(one);
-        try
-        {
-            Room two = new Room(null, 3, 2, BigDecimal.valueOf(1000));
-            throw new IllegalArgumentException("Input is null.");
-        } catch (IllegalArgumentException iax)
-        {
-        }
-        try
-        {
-            Room three = new Room((long) 1, 3, 2, BigDecimal.valueOf(1000));
-            roomManager.create(three);
-            throw new IllegalArgumentException("Room with this number has already existed.");
-        } catch (IllegalArgumentException iax)
-        {
-        }
-        try
-        {
-            roomManager.create(null);
-            throw new NullPointerException("Creating room may not be null.");
-        } catch (NullPointerException npe)
-        {
-        }
+        assertThatThrownBy(() -> new Room(null, 3, 2, BigDecimal.valueOf(1000)))
+                .isInstanceOf(NullPointerException.class);
+        Room three = new Room((long) 1, 3, 2, BigDecimal.valueOf(1000));
+        assertThatThrownBy(() -> roomManager.create(three)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> roomManager.create(null)).isInstanceOf(NullPointerException.class);
     }
 }

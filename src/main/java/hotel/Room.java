@@ -9,12 +9,12 @@ public class Room
 {
 
     private Long id;
-    private Long number;
+    private long number;
     private int capacity;
     private int floor;
     private BigDecimal pricePerDay;
 
-    public Room(Long number, int capacity, int floor, BigDecimal pricePerDay)
+    public Room(long number, int capacity, int floor, BigDecimal pricePerDay)
     {
         this.number = number;
         this.capacity = capacity;
@@ -32,7 +32,7 @@ public class Room
         this.id = id;
     }
 
-    public Long getNumber()
+    public long getNumber()
     {
         return number;
     }
