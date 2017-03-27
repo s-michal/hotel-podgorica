@@ -65,8 +65,6 @@ public class RoomManagerImplTest
     {
         Room one = new Room((long) 1, 4, 3, BigDecimal.valueOf(1400));
         roomManager.create(one);
-        assertThatThrownBy(() -> new Room(null, 3, 2, BigDecimal.valueOf(1000)))
-                .isInstanceOf(NullPointerException.class);
         Room three = new Room((long) 1, 3, 2, BigDecimal.valueOf(1000));
         assertThatThrownBy(() -> roomManager.create(three)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> roomManager.create(null)).isInstanceOf(NullPointerException.class);
