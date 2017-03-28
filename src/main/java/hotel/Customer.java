@@ -1,9 +1,7 @@
 package hotel;
 
-import org.mockito.cglib.core.Local;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Created by xsustera on 8.3.17.
