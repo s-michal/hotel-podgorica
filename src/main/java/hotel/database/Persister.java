@@ -40,7 +40,14 @@ public class Persister<T>
             List<Field> fields = getFields(entity);
 
             for (Field field : fields) {
-                sets.add(String.format("\"%s\" = ?", Utils.propertyNameToColumnName(field.getName())));
+
+                String columnName = Utils.propertyNameToColumnName(field.getName());
+
+                if(field.isAnnotationPresent(Association.class)) {
+                    columnName += "_id";
+                }
+
+                sets.add(String.format("\"%s\" = ?", columnName));
             }
 
             String query = String.format("UPDATE \"%s\" SET %s WHERE \"id\" = ?", table, sets);
@@ -52,14 +59,23 @@ public class Persister<T>
             for (Field field : fields) {
                 field.setAccessible(true);
 
+                Object value;
+                if(field.isAnnotationPresent(Association.class)) {
+                    Object association = field.get(entity);
+                    Field idField = association.getClass().getDeclaredField("id");
+                    idField.setAccessible(true);
+                    value = idField.get(association);
+                } else {
+                    value = field.get(entity);
+                }
+
                 set(statement, i++, field.get(entity));
-                sets.add(String.format("\"%s\" = ?", field.getName()));
             }
 
             statement.setLong(i, id);
 
             statement.execute();
-        } catch (SQLException | IllegalAccessException e) {
+        } catch (SQLException | IllegalAccessException | NoSuchFieldException e) {
             String message = "Update failed";
             log(e, message);
             throw new ApplicationException(message, e);
@@ -76,7 +92,13 @@ public class Persister<T>
             List<Field> fields = getFields(entity);
 
             for (Field field : fields) {
-                columns.add(String.format("\"%s\"", Utils.propertyNameToColumnName(field.getName())));
+
+                String columnName = Utils.propertyNameToColumnName(field.getName());
+
+                if(field.isAnnotationPresent(Association.class)) {
+                    columnName += "_id";
+                }
+                columns.add(String.format("\"%s\"", columnName));
                 values.add("?");
             }
 
@@ -89,14 +111,25 @@ public class Persister<T>
 
             for (Field field : fields) {
                 field.setAccessible(true);
-                set(statement, i++, field.get(entity));
+
+                Object value;
+                if(field.isAnnotationPresent(Association.class)) {
+                    Object association = field.get(entity);
+                    Field idField = association.getClass().getDeclaredField("id");
+                    idField.setAccessible(true);
+                    value = idField.get(association);
+                } else {
+                    value = field.get(entity);
+                }
+
+                set(statement, i++, value);
             }
 
             statement.execute();
 
             return getId(statement.getGeneratedKeys());
 
-        } catch (SQLException | IllegalAccessException e) {
+        } catch (SQLException | IllegalAccessException | NoSuchFieldException e) {
             String message = "Insert failed";
             log(e, message);
             throw new ApplicationException(message, e);
@@ -110,17 +143,12 @@ public class Persister<T>
         } else if (value instanceof String) {
             statement.setString(position, (String) value);
         } else if (value instanceof LocalDate) {
-            statement.setDate(position, toSqlDate((LocalDate) value));
+            statement.setDate(position, Utils.toSqlDate((LocalDate) value));
         } else if (value instanceof BigDecimal) {
             statement.setBigDecimal(position, (BigDecimal) value);
         } else if (value instanceof Integer) {
             statement.setInt(position, (Integer) value);
         }
-    }
-
-    private Date toSqlDate(LocalDate localDate)
-    {
-        return localDate == null ? null : Date.valueOf(localDate);
     }
 
     private List<Field> getFields(T entity)

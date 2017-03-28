@@ -12,3 +12,11 @@ CREATE TABLE "room" (
   "capacity" INT NOT NULL,
   "price_per_day" DECIMAL NOT NULL
 );
+
+CREATE TABLE "reservation" (
+  "id" BIGINT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  "room_id" BIGINT NOT NULL,
+  "customer_id" BIGINT NOT NULL UNIQUE,
+  "since" DATE NOT NULL,
+  "until" DATE NOT NULL
+);

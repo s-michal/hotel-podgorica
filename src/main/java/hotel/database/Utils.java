@@ -1,5 +1,8 @@
 package hotel.database;
 
+import java.sql.Date;
+import java.time.LocalDate;
+
 public class Utils
 {
 
@@ -9,5 +12,11 @@ public class Utils
         String replacement = "$1_$2";
         return name.replaceAll(regex, replacement).toLowerCase();
     }
+
+    public static Date toSqlDate(LocalDate localDate)
+    {
+        return localDate == null ? null : Date.valueOf(localDate);
+    }
+
 
 }
