@@ -1,6 +1,7 @@
 package hotel;
 
-import java.util.Date;
+
+import java.time.LocalDate;
 
 /**
  * Created by xsustera on 8.3.17.
@@ -11,10 +12,13 @@ public class Customer
     private Long id;
     private String name;
     private String address;
-    private Date birthDate;
+    private LocalDate birthDate;
 
-    public Customer(String name, String adrress)
+    public Customer(String name, String address, LocalDate birthDate)
     {
+        this.name = name;
+        this.address = address;
+        this.birthDate = birthDate;
     }
 
     public Long getId()
@@ -47,12 +51,12 @@ public class Customer
         this.address = address;
     }
 
-    public Date getBirthDate()
+    public LocalDate getBirthDate()
     {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate)
+    public void setBirthDate(LocalDate birthDate)
     {
         this.birthDate = birthDate;
     }
