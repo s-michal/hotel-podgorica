@@ -3,9 +3,11 @@ package hotel;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 public class CustomerManagerImplTest
 {
@@ -16,55 +18,70 @@ public class CustomerManagerImplTest
     public void setUp() throws Exception
     {
         customerManager = new CustomerManagerImpl();
-        customerManager.create(new Customer("Tomas", "Jirova"));
-        customerManager.create(new Customer("Dominik", "Molakova"));
     }
 
+
     @Test
-    public void create() throws Exception
+    public void testingCreateAndFindByName() throws Exception
     {
-        Customer petr = new Customer("Petr", "Vitezna");
+        Customer petr = new Customer("Petr", "Vitezna", LocalDate.of(1977, 8, 21));
         customerManager.create(petr);
-        assertSame("Customer is not in a database", petr, customerManager.findByName("Petr"));
+        assertThat(customerManager.findByName("Petr")).isEqualTo(petr);
     }
 
     @Test
-    public void update() throws Exception
+    public void testingFindAll() throws Exception
     {
-        Customer tomas = new Customer("Tomas", "Konradova");
+        Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        Customer petr = new Customer("Petr", "Vitezna", LocalDate.of(1977, 8, 21));
+        customerManager.create(tomas);
+        customerManager.create(petr);
+        List<Customer> allCustomer = new ArrayList<>();
+        allCustomer.add(tomas);
+        allCustomer.add(petr);
+        assertThat(customerManager.findAll()).isEqualTo(allCustomer);
+    }
+
+    @Test
+    public void testingFind() throws Exception
+    {
+        Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        customerManager.create(tomas);
+        assertThat(tomas.getId()).isNotNull();
+        assertThat(customerManager.find(tomas.getId())).isEqualTo(tomas);
+    }
+
+    @Test
+    public void testingUpdate() throws Exception
+    {
+        Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        customerManager.create(tomas);
+        tomas.setAddress("Vitezna");
         customerManager.update(tomas);
-        assertSame("Address in not same", tomas.getAddress(), customerManager.findByName("Tomas").getAddress());
+        assertThat(customerManager.findByName("Tomas").getAddress()).isSameAs("Vitezna");
     }
 
     @Test
-    public void find() throws Exception
+    public void testingDelete() throws Exception
     {
-        Customer tomas = customerManager.findByName("Tomas");
-        assertNotNull("Customer has not ID", tomas.getId());
-        assertSame(tomas, customerManager.find(tomas.getId()));
+        Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        customerManager.create(tomas);
+        customerManager.delete(tomas);
+        assertThat(customerManager.findAll()).hasSize(0);
     }
 
     @Test
-    public void findByName() throws Exception
+    public void testingSameCustomer() throws Exception
     {
-        Customer tomas = customerManager.findByName("Tomas");
-        assertSame("Tomas", tomas.getName());
+        Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        customerManager.create(tomas);
+        Customer secondTomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        assertThatThrownBy(() -> customerManager.create(secondTomas)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void findAll() throws Exception
+    public void testingCreateNullObject() throws Exception
     {
-        List<Customer> all = customerManager.findAll();
-        assertEquals(2, all.size());
+        assertThatThrownBy(() -> customerManager.create(null)).isInstanceOf(NullPointerException.class);
     }
-
-    @Test
-    public void delete() throws Exception
-    {
-        customerManager.delete(customerManager.findByName("Tomas"));
-        List<Customer> all = customerManager.findAll();
-        assertEquals(1, all.size());
-        assertSame("Dominik", all.get(0).getName());
-    }
-
 }

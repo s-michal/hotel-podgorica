@@ -1,5 +1,8 @@
 package hotel;
 
+import org.mockito.cglib.core.Local;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -11,10 +14,13 @@ public class Customer
     private Long id;
     private String name;
     private String address;
-    private Date birthDate;
+    private LocalDate birthDate;
 
-    public Customer(String name, String adrress)
+    public Customer(String name, String address, LocalDate birthDate)
     {
+        this.name = name;
+        this.address = address;
+        this.birthDate = birthDate;
     }
 
     public Long getId()
@@ -47,12 +53,12 @@ public class Customer
         this.address = address;
     }
 
-    public Date getBirthDate()
+    public LocalDate getBirthDate()
     {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate)
+    public void setBirthDate(LocalDate birthDate)
     {
         this.birthDate = birthDate;
     }
