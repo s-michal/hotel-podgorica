@@ -3,20 +3,50 @@ package hotel;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import hotel.database.Hydrator;
+import hotel.database.Persister;
+import hotel.database.ReservationHydrator;
 import hotel.exceptions.ReservationNotFoundException;
+import org.junit.Before;
 import org.junit.Test;
 
-public class HotelManagerImplTest
+import javax.sql.DataSource;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public class HotelManagerImplTest extends TestWithDatabase
 {
+
+    private HotelManagerImpl manager;
+
+    private RoomManagerImpl rooms;
+
+    private CustomerManagerImpl customers;
+
+    @Before
+    public void setUp() throws Exception
+    {
+        DataSource dataSource = getDataSource();
+        manager = new HotelManagerImpl(
+                dataSource,
+                new ReservationHydrator(null),
+                new Hydrator<>(Customer.class, null),
+                new Hydrator<>(Room.class, null),
+                null,
+                new Persister<>("reservation", dataSource, null)
+        );
+
+        rooms = new RoomManagerImpl(dataSource, null);
+        customers = new CustomerManagerImpl(dataSource, null);
+    }
 
     @Test
     public void create() throws Exception
     {
-        HotelManagerImpl manager = new HotelManagerImpl();
-        manager.placeReservation(createReservation());
-        manager.placeReservation(createReservation());
+        manager.placeReservation(createReservation(getRoom(4), getCustomer()));
+        manager.placeReservation(createReservation(getRoom(7), getCustomer()));
 
-        Reservation reservation = createReservation();
+        Reservation reservation = createReservation(getRoom(6), getCustomer());
         manager.placeReservation(reservation);
 
         assertThat(manager.findAll())
@@ -29,8 +59,6 @@ public class HotelManagerImplTest
     @Test
     public void createWithNull() throws Exception
     {
-        HotelManagerImpl manager = new HotelManagerImpl();
-
         assertThatThrownBy(() -> manager.placeReservation(null))
                 .isInstanceOf(NullPointerException.class);
 
@@ -41,10 +69,9 @@ public class HotelManagerImplTest
     @Test
     public void find() throws Exception
     {
-        HotelManagerImpl manager = new HotelManagerImpl();
-        manager.placeReservation(createReservation());
+        manager.placeReservation(createReservation(getRoom(666), getCustomer()));
 
-        Reservation reservation = createReservation();
+        Reservation reservation = createReservation(getRoom(69), getCustomer());
         manager.placeReservation(reservation);
 
         assertThat(manager.find(reservation.getId()))
@@ -54,9 +81,6 @@ public class HotelManagerImplTest
     @Test
     public void findForUnknownIdThrowsException() throws Exception
     {
-        HotelManagerImpl manager = new HotelManagerImpl();
-        manager.placeReservation(createReservation());
-
         assertThatThrownBy(() -> manager.find(666))
                 .isInstanceOf(ReservationNotFoundException.class);
     }
@@ -64,8 +88,7 @@ public class HotelManagerImplTest
     @Test
     public void delete() throws Exception
     {
-        HotelManagerImpl manager = new HotelManagerImpl();
-        Reservation reservation = createReservation();
+        Reservation reservation = createReservation(getRoom(2), getCustomer());
 
         manager.placeReservation(reservation);
         manager.delete(reservation);
@@ -77,34 +100,17 @@ public class HotelManagerImplTest
     @Test
     public void deleteOfNotPersistedReservationThrowsException() throws Exception
     {
-        HotelManagerImpl manager = new HotelManagerImpl();
-
-        assertThatThrownBy(() -> manager.delete(createReservation()))
+        assertThatThrownBy(() -> manager.delete(createReservation(getRoom(2), getCustomer())))
                 .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test
-    public void reservationForNonexistingRoomAreNone() throws Exception
+    public void reservationsForRoom() throws Exception
     {
-        HotelManagerImpl manager = new HotelManagerImpl();
+        Room room = getRoom(2);
 
-        Room room = mock(Room.class);
-        when(room.getId()).thenReturn(null);
-
-        assertThat(manager.findReservationByRoom(room))
-                .isEmpty(); // Or throw exception?
-    }
-
-    @Test
-    public void reservationsForRoom()
-    {
-        HotelManagerImpl manager = new HotelManagerImpl();
-
-        Room room = mock(Room.class);
-        when(room.getId()).thenReturn(new Long(10));
-
-        Reservation first = createReservation(room);
-        Reservation second = createReservation(room);
+        Reservation first = createReservation(room, getCustomer());
+        Reservation second = createReservation(room, getCustomer());
         manager.placeReservation(first);
         manager.placeReservation(second);
 
@@ -112,16 +118,23 @@ public class HotelManagerImplTest
                 .containsExactlyInAnyOrder(first, second);
     }
 
-    private Reservation createReservation(Room room)
+    private Room getRoom(long number) throws Exception
     {
-        return new Reservation(room);
+        Room room = new Room(number, 20, 4, BigDecimal.valueOf(450));
+        rooms.create(room);
+        return room;
     }
 
-    private Reservation createReservation()
+    private Customer getCustomer() throws Exception
     {
-        Room room = mock(Room.class);
-        when(room.getId()).thenReturn(new Long(10));
-        return createReservation(room);
+        Customer customer = new Customer("Lady Gaga", "Hollywood something", LocalDate.now());
+        customers.create(customer);
+        return customer;
+    }
+
+    private Reservation createReservation(Room room, Customer customer)
+    {
+        return new Reservation(room, customer, LocalDate.now(), LocalDate.now().plusDays(5));
     }
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class CustomerManagerImplTest
+public class CustomerManagerImplTest extends TestWithDatabase
 {
 
     CustomerManagerImpl customerManager;
@@ -17,7 +17,7 @@ public class CustomerManagerImplTest
     @Before
     public void setUp() throws Exception
     {
-        customerManager = new CustomerManagerImpl();
+        customerManager = new CustomerManagerImpl(getDataSource(), null);
     }
 
 
@@ -26,7 +26,7 @@ public class CustomerManagerImplTest
     {
         Customer petr = new Customer("Petr", "Vitezna", LocalDate.of(1977, 8, 21));
         customerManager.create(petr);
-        assertThat(customerManager.findByName("Petr")).isEqualTo(petr);
+        assertThat(customerManager.findByName("Petr")).contains(petr);
     }
 
     @Test
@@ -58,7 +58,9 @@ public class CustomerManagerImplTest
         customerManager.create(tomas);
         tomas.setAddress("Vitezna");
         customerManager.update(tomas);
-        assertThat(customerManager.findByName("Tomas").getAddress()).isSameAs("Vitezna");
+
+        tomas = customerManager.find(tomas.getId());
+        assertThat(tomas.getAddress()).isEqualTo("Vitezna");
     }
 
     @Test
@@ -71,12 +73,18 @@ public class CustomerManagerImplTest
     }
 
     @Test
+    public void testingDeleteUnsavedCustomerThrowsException() throws Exception
+    {
+        Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        assertThatThrownBy(() -> customerManager.delete(tomas)).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     public void testingSameCustomer() throws Exception
     {
         Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
         customerManager.create(tomas);
-        Customer secondTomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
-        assertThatThrownBy(() -> customerManager.create(secondTomas)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> customerManager.create(tomas)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

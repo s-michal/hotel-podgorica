@@ -1,24 +1,58 @@
 package hotel;
 
-import java.util.Objects;
+import hotel.database.Association;
 
-/**
- * Created by fmasa on 15.3.17.
- */
-public class Reservation
+import java.io.Serializable;
+import java.time.LocalDate;
+
+public class Reservation implements Serializable
 {
 
+    private Long id;
+
+    @Association
     private Room room;
 
-    public Reservation(Room room)
+    @Association
+    private Customer customer;
+
+    private LocalDate since;
+    private LocalDate until;
+
+    public Reservation(Room room, Customer customer, LocalDate since, LocalDate until)
     {
-        Objects.requireNonNull(room);
         this.room = room;
+        this.customer = customer;
+        this.since = since;
+        this.until = until;
+    }
+
+    public void setId(long id)
+    {
+        if(this.id != null) {
+            throw new IllegalStateException("Reservation already has identity");
+        }
+        this.id = id;
     }
 
     public Long getId()
     {
-        return null;
+        return id;
+    }
+
+    public Customer getCustomer()
+    {
+        return customer;
+    }
+
+    public LocalDate getSince()
+    {
+        return since;
+    }
+
+    public LocalDate getUntil()
+    {
+        return until;
     }
 
     public Room getRoom()
@@ -26,4 +60,20 @@ public class Reservation
         return room;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Reservation that = (Reservation) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return id != null ? id.hashCode() : 0;
+    }
 }
