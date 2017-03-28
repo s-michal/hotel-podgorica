@@ -26,19 +26,17 @@ public class Customer
         return id;
     }
 
-    public void setId(Long id)
+    void setId(Long id)
     {
+        if(this.id != null) {
+            throw new IllegalStateException("User already has identity");
+        }
         this.id = id;
     }
 
     public String getName()
     {
         return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     public String getAddress()
@@ -56,8 +54,20 @@ public class Customer
         return birthDate;
     }
 
-    public void setBirthDate(LocalDate birthDate)
+    @Override
+    public boolean equals(Object o)
     {
-        this.birthDate = birthDate;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Customer customer = (Customer) o;
+
+        return id != null ? id.equals(customer.id) : customer.id == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return id != null ? id.hashCode() : 0;
     }
 }

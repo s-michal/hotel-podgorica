@@ -7,14 +7,8 @@ import hotel.exceptions.ReservationNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 
-public class HotelManagerImplTest extends TestWithDatabase
+public class HotelManagerImplTest
 {
-
-    @Before
-    public void setUp() throws Exception
-    {
-        setUpDatabase("hotel");
-    }
 
     @Test
     public void create() throws Exception

@@ -1,6 +1,7 @@
 package hotel;
 
 import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.junit.After;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -14,14 +15,20 @@ abstract class TestWithDatabase
 
     private EmbeddedDataSource ds;
 
-    protected void setUpDatabase(String name) throws Exception
+    protected DataSource getDataSource() throws Exception
     {
+        if(ds != null) {
+            return ds;
+        }
+
         ds = new EmbeddedDataSource();
         // we will use in memory database
-        ds.setDatabaseName("memory:" + name);
+        ds.setDatabaseName("memory:tests");
         // database is created automatically if it does not exist yet
         ds.setCreateDatabase("create");
-        executeSqlScript(CustomerManagerImpl.class.getResource("/sql/schema.sql"));
+        executeSqlScript(CustomerManagerImpl.class.getResource("/sql/up.sql"));
+
+        return ds;
     }
 
 
@@ -60,5 +67,12 @@ abstract class TestWithDatabase
             throw new RuntimeException("Cannot read " + url, ex);
         }
     }
+
+    @After
+    public void tearDown() throws Exception
+    {
+        executeSqlScript(CustomerManagerImpl.class.getResource("/sql/down.sql"));
+    }
+
 
 }

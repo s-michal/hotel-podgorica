@@ -8,13 +8,13 @@ import java.util.List;
 public interface CustomerManager
 {
 
-    void create(Customer customer);
+    void create(Customer customer) throws ApplicationException;
 
-    void update(Customer customer);
+    void update(Customer customer) throws ApplicationException;
 
     Customer find(Long id);
 
-    Customer findByName(String name);
+    List<Customer> findByName(String name);
 
     List<Customer> findAll();
 
