@@ -12,11 +12,11 @@ public interface CustomerManager
 
     void update(Customer customer) throws ApplicationException;
 
-    Customer find(Long id);
+    Customer find(Long id) throws ApplicationException;
 
-    List<Customer> findByName(String name);
+    List<Customer> findByName(String name) throws ApplicationException;
 
-    List<Customer> findAll();
+    List<Customer> findAll() throws ApplicationException;
 
     void delete(Customer customer);
 }

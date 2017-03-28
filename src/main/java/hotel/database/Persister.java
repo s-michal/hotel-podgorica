@@ -4,6 +4,7 @@ import hotel.ApplicationException;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -33,13 +34,13 @@ public class Persister<T>
 
     public void update(T entity, long id) throws ApplicationException
     {
-        try (Connection conn = dataSource.getConnection()){
+        try (Connection conn = dataSource.getConnection()) {
             StringJoiner sets = new StringJoiner(", ");
 
             List<Field> fields = getFields(entity);
 
             for (Field field : fields) {
-                sets.add(String.format("\"%s\" = ?", propertyNameToTableName(field.getName())));
+                sets.add(String.format("\"%s\" = ?", Utils.propertyNameToColumnName(field.getName())));
             }
 
             String query = String.format("UPDATE \"%s\" SET %s WHERE \"id\" = ?", table, sets);
@@ -58,7 +59,7 @@ public class Persister<T>
             statement.setLong(i, id);
 
             statement.execute();
-        } catch(SQLException | IllegalAccessException e) {
+        } catch (SQLException | IllegalAccessException e) {
             String message = "Update failed";
             log(e, message);
             throw new ApplicationException(message, e);
@@ -69,13 +70,13 @@ public class Persister<T>
 
     public long insert(T entity) throws ApplicationException
     {
-        try (Connection conn = dataSource.getConnection()){
+        try (Connection conn = dataSource.getConnection()) {
             StringJoiner columns = new StringJoiner(", ");
             StringJoiner values = new StringJoiner(", ");
             List<Field> fields = getFields(entity);
 
-            for (Field field: fields) {
-                columns.add(String.format("\"%s\"", propertyNameToTableName(field.getName())));
+            for (Field field : fields) {
+                columns.add(String.format("\"%s\"", Utils.propertyNameToColumnName(field.getName())));
                 values.add("?");
             }
 
@@ -95,7 +96,7 @@ public class Persister<T>
 
             return getId(statement.getGeneratedKeys());
 
-        } catch(SQLException | IllegalAccessException e) {
+        } catch (SQLException | IllegalAccessException e) {
             String message = "Insert failed";
             log(e, message);
             throw new ApplicationException(message, e);
@@ -110,19 +111,16 @@ public class Persister<T>
             statement.setString(position, (String) value);
         } else if (value instanceof LocalDate) {
             statement.setDate(position, toSqlDate((LocalDate) value));
+        } else if (value instanceof BigDecimal) {
+            statement.setBigDecimal(position, (BigDecimal) value);
+        } else if (value instanceof Integer) {
+            statement.setInt(position, (Integer) value);
         }
     }
 
     private Date toSqlDate(LocalDate localDate)
     {
         return localDate == null ? null : Date.valueOf(localDate);
-    }
-
-    private String propertyNameToTableName(String name)
-    {
-        String regex = "([a-z])([A-Z]+)";
-        String replacement = "$1_$2";
-        return name.replaceAll(regex, replacement).toLowerCase();
     }
 
     private List<Field> getFields(T entity)
@@ -150,7 +148,7 @@ public class Persister<T>
 
     private void log(Throwable e, String message)
     {
-        if(logger == null) {
+        if (logger == null) {
             return;
         }
         logger.log(Level.SEVERE, message, e);

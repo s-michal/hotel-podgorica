@@ -1,5 +1,6 @@
 package hotel;
 
+import hotel.database.Hydrator;
 import hotel.database.Persister;
 
 import javax.sql.DataSource;
@@ -20,12 +21,15 @@ public class CustomerManagerImpl implements CustomerManager
 
     private Persister<Customer> persister;
 
+    private Hydrator<Customer> hydrator;
+
     public CustomerManagerImpl(DataSource dataSource, Logger logger)
     {
         Objects.requireNonNull(dataSource);
         this.dataSource = dataSource;
         this.logger = logger;
         this.persister = new Persister<>("customer", dataSource, logger);
+        this.hydrator = new Hydrator<>(Customer.class, logger);
     }
 
     public void create(Customer customer) throws ApplicationException
@@ -47,7 +51,7 @@ public class CustomerManagerImpl implements CustomerManager
         persister.update(customer, customer.getId());
     }
 
-    public Customer find(Long id)
+    public Customer find(Long id) throws ApplicationException
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -63,7 +67,7 @@ public class CustomerManagerImpl implements CustomerManager
         return null;
     }
 
-    public List<Customer> findByName(String name)
+    public List<Customer> findByName(String name) throws ApplicationException
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -79,7 +83,7 @@ public class CustomerManagerImpl implements CustomerManager
         return null;
     }
 
-    public List<Customer> findAll()
+    public List<Customer> findAll() throws ApplicationException
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -110,43 +114,26 @@ public class CustomerManagerImpl implements CustomerManager
         }
     }
 
-    private Customer rowToCustomer(ResultSet result) throws SQLException
-    {
-        Customer customer = new Customer(
-                result.getString("name"),
-                result.getString("address"),
-                toLocalDate(result.getDate("birth_date"))
-        );
-        customer.setId(result.getLong("id"));
-
-        return customer;
-    }
-
-    private Customer executeQueryForSingleRow(PreparedStatement statement) throws SQLException
+    private Customer executeQueryForSingleRow(PreparedStatement statement) throws SQLException, ApplicationException
     {
         ResultSet rs = statement.executeQuery();
         if (rs.next()) {
-            return rowToCustomer(rs);
+            return hydrator.hydrate(rs);
         }
         return null;
     }
 
-    private List<Customer> executeQueryForMultipleRows(PreparedStatement statement) throws SQLException
+    private List<Customer> executeQueryForMultipleRows(PreparedStatement statement) throws SQLException, ApplicationException
     {
         ResultSet rs = statement.executeQuery();
 
         List<Customer> list = new ArrayList<>();
 
         while(rs.next()) {
-            list.add(rowToCustomer(rs));
+            list.add(hydrator.hydrate(rs));
         }
 
         return list;
-    }
-
-    private LocalDate toLocalDate(Date date)
-    {
-        return date == null ? null : date.toLocalDate();
     }
 
     private void log(Throwable e, String message)
