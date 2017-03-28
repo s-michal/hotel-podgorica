@@ -1,5 +1,7 @@
 package hotel;
 
+import hotel.exceptions.DuplicateRoomNumberException;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -9,17 +11,17 @@ import java.util.List;
 public interface RoomManager
 {
 
-    void create(Room room);
+    void create(Room room) throws ApplicationException, DuplicateRoomNumberException;
 
-    void update(Room room);
+    void update(Room room) throws ApplicationException;
 
-    Room find(Long id);
+    Room find(Long id) throws ApplicationException;
 
-    List<Room> findAll();
+    List<Room> findAll() throws ApplicationException;
 
-    List<Room> findAllByFloor(int floor);
+    List<Room> findAllByFloor(int floor) throws ApplicationException;
 
-    List<Room> findAllInPrice(BigDecimal price);
+    List<Room> findAllInPrice(BigDecimal price) throws ApplicationException;
 
     void delete(Room room);
 }

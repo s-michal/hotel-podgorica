@@ -1,5 +1,7 @@
 package hotel;
 
+import hotel.exceptions.DuplicateRoomNumberException;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -8,14 +10,15 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class RoomManagerImplTest
+public class RoomManagerImplTest extends TestWithDatabase
 {
 
     RoomManagerImpl roomManager;
 
+    @Before
     public void setUp() throws Exception
     {
-        roomManager = new RoomManagerImpl();
+        roomManager = new RoomManagerImpl(getDataSource(), null);
     }
 
     @Test
@@ -86,7 +89,7 @@ public class RoomManagerImplTest
         Room one = new Room((long) 1, 4, 3, BigDecimal.valueOf(1400));
         roomManager.create(one);
         Room two = new Room((long) 1, 3, 2, BigDecimal.valueOf(1000));
-        assertThatThrownBy(() -> roomManager.create(two)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> roomManager.create(two)).isInstanceOf(DuplicateRoomNumberException.class);
     }
 
     @Test

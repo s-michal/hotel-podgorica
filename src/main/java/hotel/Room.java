@@ -1,11 +1,12 @@
 package hotel;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by uzivatel on 14.3.2017.
  */
-public class Room
+public class Room implements Serializable
 {
 
     private Long id;
@@ -70,5 +71,22 @@ public class Room
     public void setPricePerDay(BigDecimal pricePerDay)
     {
         this.pricePerDay = pricePerDay;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Room room = (Room) o;
+
+        return id != null ? id.equals(room.id) : room.id == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return id != null ? id.hashCode() : 0;
     }
 }
