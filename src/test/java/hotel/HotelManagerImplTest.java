@@ -13,6 +13,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.logging.Logger;
 
 public class HotelManagerImplTest extends TestWithDatabase
 {
@@ -27,17 +28,32 @@ public class HotelManagerImplTest extends TestWithDatabase
     public void setUp() throws Exception
     {
         DataSource dataSource = getDataSource();
+        Logger logger = null;
+        Hydrator<Customer> customerHydrator = new Hydrator<>(Customer.class, logger);
+        Hydrator<Room> roomHydrator = new Hydrator<>(Room.class, logger);
+
         manager = new HotelManagerImpl(
                 dataSource,
-                new ReservationHydrator(null),
-                new Hydrator<>(Customer.class, null),
-                new Hydrator<>(Room.class, null),
-                null,
-                new Persister<>("reservation", dataSource, null)
+                new ReservationHydrator(logger),
+                customerHydrator,
+                roomHydrator,
+                logger,
+                new Persister<>("reservation", dataSource, logger)
         );
 
-        rooms = new RoomManagerImpl(dataSource, null);
-        customers = new CustomerManagerImpl(dataSource, null);
+        rooms = new RoomManagerImpl(
+                dataSource,
+                new Persister<>("room", dataSource, logger),
+                roomHydrator,
+                logger
+        );
+
+        customers = new CustomerManagerImpl(
+                dataSource,
+                new Persister<>("customer", dataSource, logger),
+                customerHydrator,
+                logger
+        );
     }
 
     @Test

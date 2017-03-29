@@ -23,13 +23,21 @@ public class CustomerManagerImpl implements CustomerManager
 
     private Hydrator<Customer> hydrator;
 
-    public CustomerManagerImpl(DataSource dataSource, Logger logger)
+    public CustomerManagerImpl(
+            DataSource dataSource,
+            Persister<Customer> persister,
+            Hydrator<Customer> hydrator,
+            Logger logger
+    )
     {
         Objects.requireNonNull(dataSource);
+        Objects.requireNonNull(persister);
+        Objects.requireNonNull(hydrator);
+        
         this.dataSource = dataSource;
         this.logger = logger;
-        this.persister = new Persister<>("customer", dataSource, logger);
-        this.hydrator = new Hydrator<>(Customer.class, logger);
+        this.persister = persister;
+        this.hydrator = hydrator;
     }
 
     public void create(Customer customer) throws ApplicationException

@@ -1,12 +1,16 @@
 package hotel;
 
+import hotel.database.Hydrator;
+import hotel.database.Persister;
 import hotel.exceptions.DuplicateRoomNumberException;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -18,7 +22,14 @@ public class RoomManagerImplTest extends TestWithDatabase
     @Before
     public void setUp() throws Exception
     {
-        roomManager = new RoomManagerImpl(getDataSource(), null);
+        Logger logger = null;
+        DataSource dataSource = getDataSource();
+        roomManager = new RoomManagerImpl(
+                dataSource,
+                new Persister<>("room", dataSource, logger),
+                new Hydrator<>(Room.class, logger),
+                logger
+        );
     }
 
     @Test
