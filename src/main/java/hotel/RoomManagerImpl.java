@@ -23,12 +23,16 @@ public class RoomManagerImpl implements RoomManager
     private Persister<Room> persister;
     private Hydrator<Room> hydrator;
 
-    public RoomManagerImpl(DataSource dataSource, Logger logger)
+    public RoomManagerImpl(DataSource dataSource, Persister<Room> persister, Hydrator<Room> hydrator, Logger logger)
     {
         Objects.requireNonNull(dataSource);
+        Objects.requireNonNull(persister);
+        Objects.requireNonNull(hydrator);
+
         this.dataSource = dataSource;
         this.logger = logger;
-        this.persister = new Persister<>("room", dataSource, logger);
+        this.persister = persister;
+        this.hydrator = hydrator;
         this.hydrator = new Hydrator<>(Room.class, logger);
     }
 
