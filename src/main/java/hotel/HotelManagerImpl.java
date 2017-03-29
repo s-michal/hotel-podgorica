@@ -3,6 +3,7 @@ package hotel;
 import hotel.database.Hydrator;
 import hotel.database.Persister;
 import hotel.database.ReservationHydrator;
+import hotel.database.Utils;
 import hotel.exceptions.ApplicationException;
 import hotel.exceptions.ReservationNotFoundException;
 
@@ -11,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -141,11 +143,6 @@ public class HotelManagerImpl implements HotelManager
             log(e, message);
             throw new ApplicationException(message, e);
         }
-    }
-
-    public List<Room> findAvailableRooms(Date since, Date until) throws ApplicationException
-    {
-        return new ArrayList<>();
     }
 
     public List<Reservation> findAll() throws ApplicationException
