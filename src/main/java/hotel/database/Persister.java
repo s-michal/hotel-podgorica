@@ -6,7 +6,6 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Level;
@@ -58,24 +57,13 @@ public class Persister<T>
 
             for (Field field : fields) {
                 field.setAccessible(true);
-
-                Object value;
-                if(field.isAnnotationPresent(Association.class)) {
-                    Object association = field.get(entity);
-                    Field idField = association.getClass().getDeclaredField("id");
-                    idField.setAccessible(true);
-                    value = idField.get(association);
-                } else {
-                    value = field.get(entity);
-                }
-
-                set(statement, i++, field.get(entity));
+                set(statement, i++, getPropertyValue(field, entity));
             }
 
             statement.setLong(i, id);
 
             statement.execute();
-        } catch (SQLException | IllegalAccessException | NoSuchFieldException e) {
+        } catch (SQLException e) {
             String message = "Update failed";
             log(e, message);
             throw new ApplicationException(message, e);
@@ -112,28 +100,39 @@ public class Persister<T>
             for (Field field : fields) {
                 field.setAccessible(true);
 
-                Object value;
-                if(field.isAnnotationPresent(Association.class)) {
-                    Object association = field.get(entity);
-                    Field idField = association.getClass().getDeclaredField("id");
-                    idField.setAccessible(true);
-                    value = idField.get(association);
-                } else {
-                    value = field.get(entity);
-                }
-
-                set(statement, i++, value);
+                set(statement, i++, getPropertyValue(field, entity));
             }
 
             statement.execute();
 
             return getId(statement.getGeneratedKeys());
 
-        } catch (SQLException | IllegalAccessException | NoSuchFieldException e) {
+        } catch (SQLException e) {
             String message = "Insert failed";
             log(e, message);
             throw new ApplicationException(message, e);
         }
+    }
+
+    private Object getPropertyValue(Field field, Object entity)
+    {
+        field.setAccessible(true);
+
+        try {
+            if(field.isAnnotationPresent(Association.class)) {
+                Object association = field.get(entity);
+                Field idField = association.getClass().getDeclaredField("id");
+                idField.setAccessible(true);
+                return idField.get(association);
+            }
+
+            return field.get(entity);
+        } catch(NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException(
+                    String.format("Error when trying to get property %s of %s.", field.getName(), entity.getClass())
+            );
+        }
+
     }
 
     private void set(PreparedStatement statement, int position, Object value) throws SQLException
