@@ -3,6 +3,7 @@ package hotel;
 import hotel.database.Hydrator;
 import hotel.database.Persister;
 import hotel.database.ReservationHydrator;
+import hotel.database.Utils;
 import hotel.exceptions.ApplicationException;
 import hotel.exceptions.ReservationNotFoundException;
 
@@ -11,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,9 +79,24 @@ public class HotelManagerImpl implements HotelManager
         }
     }
 
-    public List<Collection> findCustomerReservations(Customer customer)
+    public List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException
     {
-        return null;
+        Objects.requireNonNull(customer);
+        Objects.requireNonNull(customer.getId());
+
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(
+                    QUERY+ "WHERE \"customer_id\" = ?",
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            statement.setLong(1, customer.getId());
+            return executeQueryForMultipleRows(statement.executeQuery());
+        } catch (SQLException e) {
+            String message = "Find by room was unsuccessful";
+            log(e, message);
+            throw new ApplicationException(message, e);
+        }
     }
 
     public void placeReservation(Reservation reservation) throws ApplicationException
@@ -126,11 +143,6 @@ public class HotelManagerImpl implements HotelManager
             log(e, message);
             throw new ApplicationException(message, e);
         }
-    }
-
-    public List<Room> findAvailableRooms(Date since, Date until) throws ApplicationException
-    {
-        return new ArrayList<>();
     }
 
     public List<Reservation> findAll() throws ApplicationException
