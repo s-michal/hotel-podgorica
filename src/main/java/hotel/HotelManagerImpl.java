@@ -1,6 +1,5 @@
 package hotel;
 
-import com.sun.org.apache.regexp.internal.RE;
 import hotel.database.Hydrator;
 import hotel.database.Persister;
 import hotel.database.ReservationHydrator;
@@ -37,6 +36,12 @@ public class HotelManagerImpl implements HotelManager
             Persister<Reservation> persister
     )
     {
+        Objects.requireNonNull(persister);
+        Objects.requireNonNull(reservationHydrator);
+        Objects.requireNonNull(persister);
+        Objects.requireNonNull(roomHydrator);
+        Objects.requireNonNull(customerHydrator);
+
         this.dataSource = dataSource;
         this.reservationHydrator = reservationHydrator;
         this.customerHydrator = customerHydrator;

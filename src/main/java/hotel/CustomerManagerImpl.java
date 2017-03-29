@@ -31,6 +31,9 @@ public class CustomerManagerImpl implements CustomerManager
     )
     {
         Objects.requireNonNull(dataSource);
+        Objects.requireNonNull(persister);
+        Objects.requireNonNull(hydrator);
+        
         this.dataSource = dataSource;
         this.logger = logger;
         this.persister = persister;
