@@ -1,5 +1,6 @@
 package hotel;
 
+import hotel.exceptions.ApplicationException;
 import hotel.exceptions.DuplicateRoomNumberException;
 
 import java.math.BigDecimal;

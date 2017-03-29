@@ -2,6 +2,7 @@ package hotel;
 
 import hotel.database.Hydrator;
 import hotel.database.Persister;
+import hotel.exceptions.ApplicationException;
 import hotel.exceptions.DuplicateRoomNumberException;
 
 import javax.sql.DataSource;

@@ -2,10 +2,10 @@ package hotel;
 
 import hotel.database.Hydrator;
 import hotel.database.Persister;
+import hotel.exceptions.ApplicationException;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

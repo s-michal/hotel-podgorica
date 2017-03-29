@@ -1,6 +1,6 @@
 package hotel.database;
 
-import hotel.ApplicationException;
+import hotel.exceptions.ApplicationException;
 import hotel.Customer;
 import hotel.Reservation;
 import hotel.Room;
