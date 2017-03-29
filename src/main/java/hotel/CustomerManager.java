@@ -1,5 +1,7 @@
 package hotel;
 
+import hotel.exceptions.ApplicationException;
+
 import java.util.List;
 
 /**

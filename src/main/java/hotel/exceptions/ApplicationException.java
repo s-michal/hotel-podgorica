@@ -1,4 +1,4 @@
-package hotel;
+package hotel.exceptions;
 
 public class ApplicationException extends Exception
 {

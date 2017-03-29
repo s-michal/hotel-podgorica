@@ -3,6 +3,7 @@ package hotel;
 import hotel.database.Hydrator;
 import hotel.database.Persister;
 import hotel.database.ReservationHydrator;
+import hotel.exceptions.ApplicationException;
 import hotel.exceptions.ReservationNotFoundException;
 
 import javax.sql.DataSource;

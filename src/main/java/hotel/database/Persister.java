@@ -1,6 +1,6 @@
 package hotel.database;
 
-import hotel.ApplicationException;
+import hotel.exceptions.ApplicationException;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
