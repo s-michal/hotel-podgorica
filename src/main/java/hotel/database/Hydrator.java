@@ -41,7 +41,7 @@ public class Hydrator<T>
 
             return instance;
 
-        } catch(InstantiationException | IllegalAccessException |InvocationTargetException | SQLException e) {
+        } catch(InstantiationException | IllegalAccessException |InvocationTargetException | NoSuchMethodException | SQLException e) {
             String message = "Hydration failed";
 
             if(logger != null) {
@@ -51,10 +51,11 @@ public class Hydrator<T>
         }
     }
 
-    private T prepareInstance() throws InvocationTargetException, InstantiationException, IllegalAccessException
+    private T prepareInstance() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException
     {
         ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
-        Constructor intConstr = rf.newConstructorForSerialization(aClass);
+        // newConstructorForSerialization worked without Object.class.getDeclaredConstructor()
+        Constructor intConstr = rf.newConstructorForSerialization(aClass, Object.class.getDeclaredConstructor());
         return aClass.cast(intConstr.newInstance());
     }
 
