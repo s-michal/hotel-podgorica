@@ -77,9 +77,24 @@ public class HotelManagerImpl implements HotelManager
         }
     }
 
-    public List<Collection> findCustomerReservations(Customer customer)
+    public List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException
     {
-        return null;
+        Objects.requireNonNull(customer);
+        Objects.requireNonNull(customer.getId());
+
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(
+                    QUERY+ "WHERE \"customer_id\" = ?",
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            statement.setLong(1, customer.getId());
+            return executeQueryForMultipleRows(statement.executeQuery());
+        } catch (SQLException e) {
+            String message = "Find by room was unsuccessful";
+            log(e, message);
+            throw new ApplicationException(message, e);
+        }
     }
 
     public void placeReservation(Reservation reservation) throws ApplicationException

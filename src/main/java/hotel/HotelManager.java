@@ -14,7 +14,7 @@ public interface HotelManager
 
     public List<Reservation> findAll() throws ApplicationException;
 
-    public List<Collection> findCustomerReservations(Customer customer) throws ApplicationException;
+    public List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException;
 
     public void placeReservation(Reservation reservation) throws ApplicationException;
 
