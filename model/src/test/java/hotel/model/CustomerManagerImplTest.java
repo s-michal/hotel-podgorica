@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -21,13 +20,11 @@ public class CustomerManagerImplTest extends TestWithDatabase
     @Before
     public void setUp() throws Exception
     {
-        Logger logger = null;
         DataSource dataSource = getDataSource();
         customerManager = new CustomerManagerImpl(
                 dataSource,
-                new Persister<>("customer", dataSource, logger),
-                new Hydrator<>(Customer.class, logger),
-                logger
+                new Persister<>("customer", dataSource),
+                new Hydrator<>(Customer.class)
         );
     }
 

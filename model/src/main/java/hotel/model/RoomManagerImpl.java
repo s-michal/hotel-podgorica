@@ -4,6 +4,8 @@ import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.DuplicateRoomNumberException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -14,27 +16,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RoomManagerImpl implements RoomManager
 {
     private DataSource dataSource;
-    private Logger logger;
+    private static Logger logger = LoggerFactory.getLogger(RoomManagerImpl.class);
     private Persister<Room> persister;
     private Hydrator<Room> hydrator;
 
-    public RoomManagerImpl(DataSource dataSource, Persister<Room> persister, Hydrator<Room> hydrator, Logger logger)
+    public RoomManagerImpl(DataSource dataSource, Persister<Room> persister, Hydrator<Room> hydrator)
     {
         Objects.requireNonNull(dataSource);
         Objects.requireNonNull(persister);
         Objects.requireNonNull(hydrator);
 
         this.dataSource = dataSource;
-        this.logger = logger;
         this.persister = persister;
         this.hydrator = hydrator;
-        this.hydrator = new Hydrator<>(Room.class, logger);
+        this.hydrator = new Hydrator<>(Room.class);
     }
 
     public void create(Room room) throws ApplicationException, DuplicateRoomNumberException
@@ -68,7 +67,7 @@ public class RoomManagerImpl implements RoomManager
 
             return executeQueryForSingleRow(statement);
         } catch (SQLException e) {
-            log(e, "Find was unsuccessful");
+            logger.error("Find was unsuccessful", e);
         }
 
         return null;
@@ -81,7 +80,7 @@ public class RoomManagerImpl implements RoomManager
 
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
-            log(e, "Find all was unsuccessful");
+            logger.error("Find all was unsuccessful", e);
         }
 
         return null;
@@ -93,10 +92,10 @@ public class RoomManagerImpl implements RoomManager
             PreparedStatement statement = conn.prepareStatement(getQuery() + " WHERE \"floor\" = ?");
 
             statement.setInt(1, floor);
-            
+
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
-            log(e, "Find all was unsuccessful");
+            logger.error("Find all was unsuccessful", e);
         }
 
         return null;
@@ -108,11 +107,11 @@ public class RoomManagerImpl implements RoomManager
             PreparedStatement statement = conn.prepareStatement(getQuery() + " WHERE \"price_per_day\" <= ?");
 
             statement.setBigDecimal(1, price);
-            
+
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
             String message = "Find all was unsuccessful";
-            log(e, message);
+            logger.error(message, e);
             throw new ApplicationException(message, e);
         }
     }
@@ -130,7 +129,7 @@ public class RoomManagerImpl implements RoomManager
 
             statement.execute();
         } catch (SQLException e) {
-            log(e, "User couldn't be deleted");
+            logger.error("User couldn't be deleted", e);
         }
     }
 
@@ -149,24 +148,16 @@ public class RoomManagerImpl implements RoomManager
 
         List<Room> list = new ArrayList<>();
 
-        while(rs.next()) {
+        while (rs.next()) {
             list.add(hydrator.hydrate(rs));
         }
 
         return list;
     }
 
-    private void log(Throwable e, String message)
-    {
-        if(logger == null) {
-            return;
-        }
-        logger.log(Level.SEVERE, message, e);
-    }
-
     private void checkDuplicateNumber(long number) throws DuplicateRoomNumberException
     {
-        try (Connection conn = dataSource.getConnection()){
+        try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
                     "SELECT COUNT(*) AS \"count\" FROM \"room\" WHERE \"number\" = ?"
             );
@@ -174,10 +165,10 @@ public class RoomManagerImpl implements RoomManager
             statement.execute();
             ResultSet result = statement.getResultSet();
             result.next();
-            if(result.getInt("count") > 0) {
+            if (result.getInt("count") > 0) {
                 throw new DuplicateRoomNumberException();
             }
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             // Ssh... it's ok
         }
     }

@@ -15,9 +15,9 @@ public class ReservationHydrator
 
     private Hydrator<Reservation> hydrator;
 
-    public ReservationHydrator(Logger logger)
+    public ReservationHydrator()
     {
-        this.hydrator = new Hydrator<>(Reservation.class, logger);
+        this.hydrator = new Hydrator<>(Reservation.class);
     }
 
     public Reservation hydrate(ResultSet row, Room room, Customer customer) throws ApplicationException

@@ -3,19 +3,17 @@ package hotel.model;
 import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.database.ReservationHydrator;
-import hotel.model.database.Utils;
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.ReservationNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class HotelManagerImpl implements HotelManager
 {
@@ -27,7 +25,7 @@ public class HotelManagerImpl implements HotelManager
     private ReservationHydrator reservationHydrator;
     private Hydrator<Customer> customerHydrator;
     private Hydrator<Room> roomHydrator;
-    private Logger logger;
+    private static Logger logger = LoggerFactory.getLogger(HotelManager.class);
     private Persister<Reservation> persister;
 
     public HotelManagerImpl(
@@ -35,7 +33,6 @@ public class HotelManagerImpl implements HotelManager
             ReservationHydrator reservationHydrator,
             Hydrator<Customer> customerHydrator,
             Hydrator<Room> roomHydrator,
-            Logger logger,
             Persister<Reservation> persister
     )
     {
@@ -49,7 +46,6 @@ public class HotelManagerImpl implements HotelManager
         this.reservationHydrator = reservationHydrator;
         this.customerHydrator = customerHydrator;
         this.roomHydrator = roomHydrator;
-        this.logger = logger;
         this.persister = persister;
     }
 
@@ -74,7 +70,7 @@ public class HotelManagerImpl implements HotelManager
             return reservations.get(0);
         } catch (SQLException e) {
             String message = "Find was unsuccessful";
-            log(e, message);
+            logger.error(message, e);
             throw new ApplicationException(message, e);
         }
     }
@@ -94,7 +90,7 @@ public class HotelManagerImpl implements HotelManager
             return executeQueryForMultipleRows(statement.executeQuery());
         } catch (SQLException e) {
             String message = "Find by room was unsuccessful";
-            log(e, message);
+            logger.error(message, e);
             throw new ApplicationException(message, e);
         }
     }
@@ -121,7 +117,7 @@ public class HotelManagerImpl implements HotelManager
 
             statement.execute();
         } catch (SQLException e) {
-            log(e, "Reservation couldn't be deleted");
+            logger.error("Reservation couldn't be deleted", e);
         }
     }
 
@@ -140,7 +136,7 @@ public class HotelManagerImpl implements HotelManager
             return executeQueryForMultipleRows(statement.executeQuery());
         } catch (SQLException e) {
             String message = "Find by room was unsuccessful";
-            log(e, message);
+            logger.error(message, e);
             throw new ApplicationException(message, e);
         }
     }
@@ -156,7 +152,7 @@ public class HotelManagerImpl implements HotelManager
             return executeQueryForMultipleRows(statement.executeQuery());
         } catch (SQLException e) {
             String message = "Find all was unsuccessful";
-            log(e, message);
+            logger.error(message, e);
             throw new ApplicationException(message, e);
         }
     }
@@ -217,17 +213,9 @@ public class HotelManagerImpl implements HotelManager
             return assocation;
 
         } catch (SQLException e) {
-            //log(e, "Find all was unsuccessful");
+            //logger.error("Find all was unsuccessful", e);
             throw new ApplicationException(String.format("Couln't load data from %s", table), e);
         }
-    }
-
-    private void log(Throwable e, String message)
-    {
-        if(logger == null) {
-            return;
-        }
-        logger.log(Level.SEVERE, message, e);
     }
 
 }

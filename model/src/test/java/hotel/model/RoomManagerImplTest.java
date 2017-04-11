@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -22,13 +21,11 @@ public class RoomManagerImplTest extends TestWithDatabase
     @Before
     public void setUp() throws Exception
     {
-        Logger logger = null;
         DataSource dataSource = getDataSource();
         roomManager = new RoomManagerImpl(
                 dataSource,
-                new Persister<>("room", dataSource, logger),
-                new Hydrator<>(Room.class, logger),
-                logger
+                new Persister<>("room", dataSource),
+                new Hydrator<>(Room.class)
         );
     }
 

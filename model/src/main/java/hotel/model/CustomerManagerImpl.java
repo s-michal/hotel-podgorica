@@ -3,39 +3,33 @@ package hotel.model;
 import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.exceptions.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CustomerManagerImpl implements CustomerManager
 {
 
     private DataSource dataSource;
 
-    private Logger logger;
+    private static Logger logger = LoggerFactory.getLogger(CustomerManager.class);
 
     private Persister<Customer> persister;
 
     private Hydrator<Customer> hydrator;
 
-    public CustomerManagerImpl(
-            DataSource dataSource,
-            Persister<Customer> persister,
-            Hydrator<Customer> hydrator,
-            Logger logger
-    )
+    public CustomerManagerImpl(DataSource dataSource, Persister<Customer> persister, Hydrator<Customer> hydrator)
     {
         Objects.requireNonNull(dataSource);
         Objects.requireNonNull(persister);
         Objects.requireNonNull(hydrator);
-        
+
         this.dataSource = dataSource;
-        this.logger = logger;
         this.persister = persister;
         this.hydrator = hydrator;
     }
@@ -69,7 +63,7 @@ public class CustomerManagerImpl implements CustomerManager
 
             return executeQueryForSingleRow(statement);
         } catch (SQLException e) {
-            log(e, "Find was unsuccessful");
+            logger.error("Find was unsuccessful", e);
         }
 
         return null;
@@ -85,7 +79,7 @@ public class CustomerManagerImpl implements CustomerManager
 
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
-            log(e, "Find by name was unsuccessful");
+            logger.error("Find by name was unsuccessful", e);
         }
 
         return null;
@@ -99,7 +93,7 @@ public class CustomerManagerImpl implements CustomerManager
 
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
-            log(e, "Find all was unsuccessful");
+            logger.error("Find all was unsuccessful", e);
         }
 
         return null;
@@ -118,7 +112,7 @@ public class CustomerManagerImpl implements CustomerManager
 
             statement.execute();
         } catch (SQLException e) {
-            log(e, "User couldn't be deleted");
+            logger.error("User couldn't be deleted", e);
         }
     }
 
@@ -144,11 +138,4 @@ public class CustomerManagerImpl implements CustomerManager
         return list;
     }
 
-    private void log(Throwable e, String message)
-    {
-        if(logger == null) {
-            return;
-        }
-        logger.log(Level.SEVERE, message, e);
-    }
 }

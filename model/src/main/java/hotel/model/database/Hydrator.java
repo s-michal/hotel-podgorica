@@ -1,6 +1,8 @@
 package hotel.model.database;
 
 import hotel.model.exceptions.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.Constructor;
@@ -11,20 +13,17 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Hydrator<T>
 {
 
     private Class<T> aClass;
 
-    private Logger logger;
+    private static Logger logger = LoggerFactory.getLogger(Hydrator.class);
 
-    public Hydrator(Class<T> aClass, Logger logger)
+    public Hydrator(Class<T> aClass)
     {
         this.aClass = aClass;
-        this.logger = logger;
     }
 
     public T hydrate(ResultSet row) throws ApplicationException
@@ -42,7 +41,7 @@ public class Hydrator<T>
             String message = "Hydration failed";
 
             if(logger != null) {
-                logger.log(Level.SEVERE, message, e);
+                logger.error(message, e);
             }
             throw new ApplicationException(message, e);
         }
