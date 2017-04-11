@@ -96,10 +96,12 @@ public class Persister<T>
 
             int i = 1;
 
+            Object value;
             for (Field field : fields) {
                 field.setAccessible(true);
-
-                set(statement, i++, getPropertyValue(field, entity));
+                value = getPropertyValue(field, entity);
+                logger.debug(String.format("Binding field '%s': %s", field.getName(), value));
+                set(statement, i++, value);
             }
 
             statement.execute();

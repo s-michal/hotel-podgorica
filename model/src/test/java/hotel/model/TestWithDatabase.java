@@ -24,6 +24,9 @@ abstract class TestWithDatabase
     @After
     public void tearDown() throws Exception
     {
+        if(ds == null) {
+            return;
+        }
         new ResourceDatabasePopulator(new ClassPathResource("sql/down.sql")).execute(ds);
     }
 

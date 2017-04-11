@@ -20,7 +20,7 @@ public class DatasourceFactory
         // database is created automatically if it does not exist yet
         ds.setCreateDatabase("create");
 
-        new ResourceDatabasePopulator(new ClassPathResource("sql/up.sql")).execute(ds);
+        new ResourceDatabasePopulator(new ClassPathResource("/sql/up.sql")).execute(ds);
 
         return ds;
     }

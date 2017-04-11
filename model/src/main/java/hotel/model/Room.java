@@ -17,6 +17,18 @@ public class Room implements Serializable
 
     public Room(long number, int capacity, int floor, BigDecimal pricePerDay)
     {
+        if(number < 0) {
+            throw new IllegalArgumentException("Room number can't be negative");
+        }
+        if(capacity < 1) {
+            throw new IllegalArgumentException("Capacity must be at least 1");
+        }
+        if(floor < 0) {
+            throw new IllegalArgumentException("We have no rooms underground (yet!)");
+        }
+        if(pricePerDay == null || pricePerDay.compareTo(new BigDecimal(0)) == -1) {
+            throw new IllegalArgumentException("Price must be positive number");
+        }
         this.number = number;
         this.capacity = capacity;
         this.floor = floor;

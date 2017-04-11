@@ -17,6 +17,15 @@ public class Customer implements Serializable
 
     public Customer(String name, String address, LocalDate birthDate)
     {
+        if(name == null || name.equals("")) {
+            throw new IllegalArgumentException("Customer must have a name");
+        }
+        if(address == null || address.equals("")) {
+            throw new IllegalArgumentException("User must have an address");
+        }
+        if(birthDate == null) {
+            throw new IllegalArgumentException("User must have a birth date");
+        }
         this.name = name;
         this.address = address;
         this.birthDate = birthDate;
