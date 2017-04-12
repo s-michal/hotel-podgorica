@@ -18,6 +18,7 @@
             <td><c:out value="${customer.birthDate}"/></td>
             <td><form method="post" action="${pageContext.request.contextPath}/customers/delete?id=${customer.id}"
                       style="margin-bottom: 0;"><input type="submit" value="Delete"></form></td>
+            <td><a href="${pageContext.request.contextPath}/customers/update?id=${customer.id}">Update</a></td>
         </tr>
     </c:forEach>
 </table>
@@ -28,23 +29,21 @@
         <c:out value="${error}"/>
     </div>
 </c:if>
-<form action="${pageContext.request.contextPath}/customers/add" method="post">
+<form action="${pageContext.request.contextPath}/customers/${formTarget}" method="post">
     <table>
         <tr>
             <th>Name:</th>
-            <td><input type="text" name="name" value="<c:out value='${param.name}'/>"></td>
+            <td><input type="text" name="name" value="<c:out value='${name}'/>"></td>
         </tr>
         <tr>
             <th>Address:</th>
             <td>
-                <textarea name="address">
-                    <c:out value='${param.address}'/>
-                </textarea>
+                <textarea name="address"><c:out value='${address}'/></textarea>
             </td>
         </tr>
         <tr>
             <th>Birth date:</th>
-            <td><input type="date" name="birthDate" value="<c:out value='${param.date}'/>"></td>
+            <td><input type="date" name="birthDate" value="<c:out value='${date}'/>"></td>
         </tr>
     </table>
     <input type="Submit" value="Register">

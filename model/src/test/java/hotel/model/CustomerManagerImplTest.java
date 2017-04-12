@@ -62,9 +62,12 @@ public class CustomerManagerImplTest extends TestWithDatabase
     @Test
     public void testingUpdate() throws Exception
     {
-        Customer tomas = new Customer("Tomas", "Konradova", LocalDate.of(1965, 4, 14));
+        LocalDate birthDate = LocalDate.of(1965, 4, 14);
+        Customer tomas = new Customer("Tomas", "Konradova", birthDate);
         customerManager.create(tomas);
-        tomas.setAddress("Vitezna");
+
+        tomas.update("Tomas", "Vitezna", birthDate);
+
         customerManager.update(tomas);
 
         tomas = customerManager.find(tomas.getId());
