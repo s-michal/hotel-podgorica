@@ -1,53 +1,64 @@
-<%@page contentType="text/html;charset=utf-8" pageEncoding="UTF-8" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
-<body>
+<%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Birth date</th>
-    </tr>
-    </thead>
-    <c:forEach items="${customers}" var="customer">
-        <tr>
-            <td><c:out value="${customer.name}"/></td>
-            <td><c:out value="${customer.address}"/></td>
-            <td><c:out value="${customer.birthDate}"/></td>
-            <td><form method="post" action="${pageContext.request.contextPath}/customers/delete?id=${customer.id}"
-                      style="margin-bottom: 0;"><input type="submit" value="Delete"></form></td>
-            <td><a href="${pageContext.request.contextPath}/customers/update?id=${customer.id}">Update</a></td>
-        </tr>
-    </c:forEach>
-</table>
+<t:layout>
+    <jsp:attribute name="title">Customers</jsp:attribute>
+    <jsp:body>
 
-<h2>Register customer</h2>
-<c:if test="${not empty error}">
-    <div style="border: solid 1px red; background-color: yellow; padding: 10px">
-        <c:out value="${error}"/>
-    </div>
-</c:if>
-<form action="${pageContext.request.contextPath}/customers/${formTarget}" method="post">
-    <table>
-        <tr>
-            <th>Name:</th>
-            <td><input type="text" name="name" value="<c:out value='${name}'/>"></td>
-        </tr>
-        <tr>
-            <th>Address:</th>
-            <td>
-                <textarea name="address"><c:out value='${address}'/></textarea>
-            </td>
-        </tr>
-        <tr>
-            <th>Birth date:</th>
-            <td><input type="date" name="birthDate" value="<c:out value='${date}'/>"></td>
-        </tr>
-    </table>
-    <input type="Submit" value="Register">
-</form>
+        <div class="card">
+            <div class="card-block">
+                <h4 class="card-title">Register customer</h4>
+                <div class="card-text">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger">
+                            <c:out value="${error}"/>
+                        </div>
+                    </c:if>
+                    <form action="${pageContext.request.contextPath}/customers/${formTarget}" method="post">
+                        <div class="form-group">
+                            <label for="nameInput">Name</label>
+                            <input type="text" name="name" class="form-control" value="<c:out value='${name}'/>" id="nameInput">
+                        </div>
+                        <div class="form-group">
+                            <label for="addressTextarea">Address</label>
+                            <textarea name="address" class="form-control" id="addressTextarea"><c:out value='${address}'/></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="birthDate">Birth date</label>
+                            <input type="date" class="form-control" id="birthDate" name="birthDate" value="<c:out value='${date}'/>">
+                        </div>
+                        <input type="Submit" class="btn btn-primary" value="Register">
+                    </form>
+                </div>
+            </div>
+        </div>
 
-</body>
-</html>
+        <hr>
+
+        <c:if test="${empty customers}">
+            <div class="alert alert-info">There are no customers yet</div>
+        </c:if>
+        <c:if test="${not empty customers}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Birth date</th>
+                </tr>
+                </thead>
+                <c:forEach items="${customers}" var="customer">
+                    <tr>
+                        <td><c:out value="${customer.name}"/></td>
+                        <td><c:out value="${customer.address}"/></td>
+                        <td><c:out value="${customer.birthDate}"/></td>
+                        <td><form method="post" action="${pageContext.request.contextPath}/customers/delete?id=${customer.id}"
+                                  style="margin-bottom: 0;"><input type="submit" value="Delete"></form></td>
+                        <td><a href="${pageContext.request.contextPath}/customers/update?id=${customer.id}">Update</a></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </c:if>
+    </jsp:body>
+</t:layout>
