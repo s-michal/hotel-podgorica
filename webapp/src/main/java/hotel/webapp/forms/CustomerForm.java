@@ -28,14 +28,14 @@ public class CustomerForm
     {
         customer = manager.find(id);
 
-        if(customer == null) {
+        if (customer == null) {
             throw new CustomerNotFoundException();
         }
     }
 
     public void render()
     {
-        if(this.customer == null) {
+        if (this.customer == null) {
             return;
         }
 
@@ -55,20 +55,20 @@ public class CustomerForm
         LocalDate birthDate;
         try {
             birthDate = LocalDate.parse(request.getParameter("birthDate"));
-        } catch(DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             throw new ValidationException(e);
         }
 
         request.setAttribute("birthDate", birthDate);
 
         try {
-            if(this.customer == null) {
+            if (this.customer == null) {
                 create(name, address, birthDate);
                 return;
             }
 
             update(name, address, birthDate);
-        } catch( IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new ValidationException(e);
         }
     }

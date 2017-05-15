@@ -32,7 +32,7 @@ public class CustomersServlet extends HttpServlet
 
         log.debug("GET ...");
 
-        switch(request.getPathInfo()) {
+        switch (request.getPathInfo()) {
             case "/update":
                 getUpdate(request, response);
                 return;
@@ -50,7 +50,7 @@ public class CustomersServlet extends HttpServlet
         try {
             createForm(request).process(request);
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch(ValidationException e) {
+        } catch (ValidationException e) {
             log.debug("Form data invalid");
             request.setAttribute("error", "You entered invalid data");
             showCustomersList(request, response);
@@ -69,13 +69,13 @@ public class CustomersServlet extends HttpServlet
             return;
         }
 
-        request.setAttribute("formTarget", "update?id="+id);
+        request.setAttribute("formTarget", "update?id=" + id);
 
         CustomerForm form = createForm(request);
 
         try {
             form.setId(id);
-        } catch(CustomerNotFoundException e) {
+        } catch (CustomerNotFoundException e) {
             log.debug("Customer not found");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
             return;
@@ -99,7 +99,7 @@ public class CustomersServlet extends HttpServlet
         }
 
 
-        request.setAttribute("formTarget", "update?id="+id);
+        request.setAttribute("formTarget", "update?id=" + id);
 
         CustomerForm form = createForm(request);
 
@@ -107,10 +107,10 @@ public class CustomersServlet extends HttpServlet
             form.setId(id);
             form.process(request);
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch(CustomerNotFoundException e) {
+        } catch (CustomerNotFoundException e) {
             log.debug("Customer not found");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch(ValidationException e) {
+        } catch (ValidationException e) {
             log.debug("Form data invalid");
             request.setAttribute("error", "You entered invalid data");
             showCustomersList(request, response);

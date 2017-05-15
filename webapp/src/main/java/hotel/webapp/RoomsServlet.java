@@ -7,6 +7,7 @@ import hotel.model.exceptions.DuplicateRoomNumberException;
 import hotel.webapp.forms.RoomForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet(RoomsServlet.URL_MAPPING + "*")
-public class RoomsServlet extends HttpServlet {
+public class RoomsServlet extends HttpServlet
+{
 
     private static final String LIST_JSP = "/templates/rooms/list.jsp";
     public static final String URL_MAPPING = "/rooms/";
@@ -23,12 +25,13 @@ public class RoomsServlet extends HttpServlet {
     private final static Logger log = LoggerFactory.getLogger(RoomsServlet.class);
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         log.debug("GET ...");
 
         System.out.println(request.getPathInfo());
 
-        if(!request.getPathInfo().equals("/")) {
+        if (!request.getPathInfo().equals("/")) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -41,7 +44,7 @@ public class RoomsServlet extends HttpServlet {
     {
         Room room = RoomForm.process(request);
 
-        if(room == null) {
+        if (room == null) {
             log.debug("Form data invalid");
             request.setAttribute("error", "You entered invalid data");
             showRoomsList(request, response);
@@ -50,12 +53,11 @@ public class RoomsServlet extends HttpServlet {
 
         try {
             getRoomManager().create(room);
-            response.sendRedirect(request.getContextPath()+URL_MAPPING);
+            response.sendRedirect(request.getContextPath() + URL_MAPPING);
         } catch (DuplicateRoomNumberException e) {
             request.setAttribute("error", String.format("Room with number %d already exists", room.getNumber()));
             showRoomsList(request, response);
-        }
-        catch (ApplicationException e) {
+        } catch (ApplicationException e) {
             log.error("Cannot add room", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
@@ -65,7 +67,7 @@ public class RoomsServlet extends HttpServlet {
     {
         Long id = Long.valueOf(request.getParameter("id"));
 
-        if(id == null) {
+        if (id == null) {
             response.sendError(404, "No room specified");
             return;
         }
@@ -73,14 +75,14 @@ public class RoomsServlet extends HttpServlet {
         try {
             Room room = getRoomManager().find(id);
 
-            if(room == null) {
+            if (room == null) {
                 response.sendError(404, "Room not found");
                 return;
             }
 
             getRoomManager().delete(room);
             log.debug("redirecting after POST");
-            response.sendRedirect(request.getContextPath()+URL_MAPPING);
+            response.sendRedirect(request.getContextPath() + URL_MAPPING);
         } catch (ApplicationException e) {
             log.error("Cannot remove room", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -89,12 +91,13 @@ public class RoomsServlet extends HttpServlet {
 
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         //support non-ASCII characters in form
         request.setCharacterEncoding("utf-8");
         //action specified by pathInfo
         String action = request.getPathInfo();
-        log.debug("POST ... {}",action);
+        log.debug("POST ... {}", action);
         switch (action) {
             case "/add":
                 actionAdd(request, response);
@@ -116,14 +119,16 @@ public class RoomsServlet extends HttpServlet {
      *
      * @return RoomManager instance
      */
-    private RoomManager getRoomManager() {
+    private RoomManager getRoomManager()
+    {
         return (RoomManager) getServletContext().getAttribute("roomManager");
     }
 
     /**
      * Stores the list of Rooms to request attribute "Rooms" and forwards to the JSP to display it.
      */
-    private void showRoomsList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void showRoomsList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         try {
             log.debug("showing table of Rooms");
             request.setAttribute("rooms", getRoomManager().findAll());

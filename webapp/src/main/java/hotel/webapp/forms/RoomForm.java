@@ -21,7 +21,7 @@ public class RoomForm
             capacity = Integer.parseInt(request.getParameter("capacity"));
             floor = Integer.parseInt(request.getParameter("floor"));
             pricePerDay = BigDecimal.valueOf(Double.parseDouble(request.getParameter("pricePerDay")));
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
 
