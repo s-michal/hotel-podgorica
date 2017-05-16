@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @WebServlet(CustomersServlet.URL_MAPPING + "*")
-public class CustomersServlet extends BaseServlet
+public class CustomersServlet extends AbstractServlet
 {
 
     private static final String LIST_JSP = "/templates/customers/list.jsp";
@@ -47,7 +47,7 @@ public class CustomersServlet extends BaseServlet
     }
 
 
-    private void actionAdd(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    void actionAdd(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         try {
             createForm(request).process(request);
@@ -87,7 +87,7 @@ public class CustomersServlet extends BaseServlet
         showCustomersList(request, response);
     }
 
-    private void postUpdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    void postUpdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         Long id = Long.valueOf(request.getParameter("id"));
 
@@ -118,7 +118,7 @@ public class CustomersServlet extends BaseServlet
         }
     }
 
-    private void actionDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    void actionDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         Long id = Long.valueOf(request.getParameter("id"));
 
@@ -145,32 +145,6 @@ public class CustomersServlet extends BaseServlet
             String message = "Cannot remove customer with reservations";
             log.error(message);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
-        }
-    }
-
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        request.setAttribute("formTarget", "add");
-        //support non-ASCII characters in form
-        request.setCharacterEncoding("utf-8");
-        //action specified by pathInfo
-        String action = request.getPathInfo();
-        log.debug("POST ... {}", action);
-        switch (action) {
-            case "/add":
-                actionAdd(request, response);
-                return;
-            case "/delete":
-                actionDelete(request, response);
-                return;
-            case "/update":
-                postUpdate(request, response);
-                return;
-            default:
-                log.error("Unknown action " + action);
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown action " + action);
         }
     }
 

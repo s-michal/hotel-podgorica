@@ -108,16 +108,11 @@ public class ReservationsServlet extends BaseServlet
      */
     private void showReservations(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        try {
-            log.debug("showing table of Reservations");
-            request.setAttribute("reservations", getHotelManager().findAll());
-            request.setAttribute("customers", getCustomers());
-            request.setAttribute("rooms", getRooms());
-            request.getRequestDispatcher(LIST_JSP).forward(request, response);
-        } catch (ApplicationException e) {
-            log.error("There was an error", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        log.debug("showing table of Reservations");
+        request.setAttribute("reservations", getHotelManager().findAll());
+        request.setAttribute("customers", getCustomers());
+        request.setAttribute("rooms", getRooms());
+        request.getRequestDispatcher(LIST_JSP).forward(request, response);
     }
 
     private List<Room> getRooms()
