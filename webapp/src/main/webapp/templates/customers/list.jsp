@@ -26,7 +26,7 @@
                         </div>
                         <div class="form-group">
                             <label for="birthDate">Birth date</label>
-                            <input type="date" class="form-control" id="birthDate" name="birthDate" value="<c:out value='${date}'/>">
+                            <input type="date" class="form-control" id="birthDate" name="birthDate" value="<c:out value='${birthDate}'/>">
                         </div>
                         <input type="Submit" class="btn btn-primary" value="Register">
                     </form>

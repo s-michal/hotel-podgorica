@@ -8,6 +8,7 @@ import hotel.webapp.forms.exceptions.ValidationException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class CustomerForm
@@ -37,7 +38,7 @@ public class CustomerForm
 
         request.setAttribute("name", customer.getName());
         request.setAttribute("address", customer.getAddress());
-        request.setAttribute("birthDate", customer.getBirthDate());
+        request.setAttribute("birthDate", customer.getBirthDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
 
     public void process(HttpServletRequest request) throws ValidationException, ApplicationException
