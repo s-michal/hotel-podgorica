@@ -4,6 +4,7 @@ import hotel.model.Room;
 import hotel.model.RoomManager;
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.DuplicateRoomNumberException;
+import hotel.model.exceptions.RoomNotFoundException;
 import hotel.webapp.forms.RoomForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,9 +84,8 @@ public class RoomsServlet extends HttpServlet
             getRoomManager().delete(room);
             log.debug("redirecting after POST");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch (ApplicationException e) {
-            log.error("Cannot remove room", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        } catch(RoomNotFoundException e) {
+            response.sendRedirect(request.getContextPath() + URL_MAPPING);
         }
     }
 
@@ -129,14 +129,9 @@ public class RoomsServlet extends HttpServlet
      */
     private void showRoomsList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        try {
-            log.debug("showing table of Rooms");
-            request.setAttribute("rooms", getRoomManager().findAll());
-            request.getRequestDispatcher(LIST_JSP).forward(request, response);
-        } catch (ApplicationException e) {
-            log.error("There was an error", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        log.debug("showing table of Rooms");
+        request.setAttribute("rooms", getRoomManager().findAll());
+        request.getRequestDispatcher(LIST_JSP).forward(request, response);
     }
 
 }

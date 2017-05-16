@@ -2,6 +2,7 @@ package hotel.model;
 
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.DuplicateRoomNumberException;
+import hotel.model.exceptions.RoomNotFoundException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,9 +17,9 @@ public interface RoomManager
 
     void update(Room room) throws ApplicationException;
 
-    Room find(Long id) throws ApplicationException;
+    Room find(Long id) throws RoomNotFoundException;
 
-    List<Room> findAll() throws ApplicationException;
+    List<Room> findAll();
 
     List<Room> findAllByFloor(int floor) throws ApplicationException;
 

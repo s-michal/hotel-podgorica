@@ -1,12 +1,10 @@
 package hotel.model;
 
 import hotel.model.exceptions.ApplicationException;
+import hotel.model.exceptions.CustomerNotFoundException;
 
 import java.util.List;
 
-/**
- * Created by xsustera on 8.3.17.
- */
 public interface CustomerManager
 {
 
@@ -14,11 +12,11 @@ public interface CustomerManager
 
     void update(Customer customer) throws ApplicationException;
 
-    Customer find(Long id) throws ApplicationException;
+    Customer find(Long id) throws CustomerNotFoundException;
 
     List<Customer> findByName(String name) throws ApplicationException;
 
-    List<Customer> findAll() throws ApplicationException;
+    List<Customer> findAll();
 
     void delete(Customer customer);
 }

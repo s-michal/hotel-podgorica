@@ -4,6 +4,7 @@ import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.DuplicateRoomNumberException;
+import hotel.model.exceptions.RoomNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ public class RoomManagerImpl implements RoomManager
         persister.update(room, room.getId());
     }
 
-    public Room find(Long id) throws ApplicationException
+    public Room find(Long id) throws RoomNotFoundException
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -68,12 +69,14 @@ public class RoomManagerImpl implements RoomManager
             return executeQueryForSingleRow(statement);
         } catch (SQLException e) {
             logger.error("Find was unsuccessful", e);
+        } catch(ApplicationException e) {
+            throw new RuntimeException(e);
         }
 
-        return null;
+        throw new RoomNotFoundException("There is no room with id " + id);
     }
 
-    public List<Room> findAll() throws ApplicationException
+    public List<Room> findAll()
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(getQuery());
@@ -81,9 +84,11 @@ public class RoomManagerImpl implements RoomManager
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
             logger.error("Find all was unsuccessful", e);
+        } catch(ApplicationException e) {
+            throw new RuntimeException();
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public List<Room> findAllByFloor(int floor) throws ApplicationException

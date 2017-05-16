@@ -3,7 +3,7 @@ package hotel.webapp.forms;
 import hotel.model.Customer;
 import hotel.model.CustomerManager;
 import hotel.model.exceptions.ApplicationException;
-import hotel.webapp.forms.exceptions.CustomerNotFoundException;
+import hotel.model.exceptions.CustomerNotFoundException;
 import hotel.webapp.forms.exceptions.ValidationException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,13 +24,9 @@ public class CustomerForm
         this.manager = manager;
     }
 
-    public void setId(long id) throws CustomerNotFoundException, ApplicationException
+    public void setId(long id) throws CustomerNotFoundException
     {
         customer = manager.find(id);
-
-        if (customer == null) {
-            throw new CustomerNotFoundException();
-        }
     }
 
     public void render()

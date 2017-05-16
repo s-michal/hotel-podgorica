@@ -3,6 +3,7 @@ package hotel.model;
 import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.exceptions.ApplicationException;
+import hotel.model.exceptions.CustomerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class CustomerManagerImpl implements CustomerManager
         persister.update(customer, customer.getId());
     }
 
-    public Customer find(Long id) throws ApplicationException
+    public Customer find(Long id) throws CustomerNotFoundException
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -64,9 +65,11 @@ public class CustomerManagerImpl implements CustomerManager
             return executeQueryForSingleRow(statement);
         } catch (SQLException e) {
             logger.error("Find was unsuccessful", e);
+        } catch(ApplicationException e) {
+            throw new RuntimeException(e);
         }
 
-        return null;
+        throw new CustomerNotFoundException("There is no room with customer " + id);
     }
 
     public List<Customer> findByName(String name) throws ApplicationException
@@ -85,7 +88,7 @@ public class CustomerManagerImpl implements CustomerManager
         return null;
     }
 
-    public List<Customer> findAll() throws ApplicationException
+    public List<Customer> findAll()
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -94,9 +97,12 @@ public class CustomerManagerImpl implements CustomerManager
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
             logger.error("Find all was unsuccessful", e);
+        } catch(ApplicationException e) {
+            logger.error("Something went wrong while hydrating data");
+            throw new RuntimeException(e);
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     public void delete(Customer customer)

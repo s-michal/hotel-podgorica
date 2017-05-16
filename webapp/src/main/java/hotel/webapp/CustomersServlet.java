@@ -4,7 +4,7 @@ import hotel.model.Customer;
 import hotel.model.CustomerManager;
 import hotel.model.exceptions.ApplicationException;
 import hotel.webapp.forms.CustomerForm;
-import hotel.webapp.forms.exceptions.CustomerNotFoundException;
+import hotel.model.exceptions.CustomerNotFoundException;
 import hotel.webapp.forms.exceptions.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,10 +79,6 @@ public class CustomersServlet extends HttpServlet
             log.debug("Customer not found");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
             return;
-        } catch (ApplicationException e) {
-            log.error("Cannot edit customer", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
         }
 
         form.render();
@@ -140,7 +136,7 @@ public class CustomersServlet extends HttpServlet
             getCustomerManager().delete(customer);
             log.debug("redirecting after POST");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch (ApplicationException e) {
+        } catch (CustomerNotFoundException e) {
             log.error("Cannot remove customer", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
@@ -187,14 +183,9 @@ public class CustomersServlet extends HttpServlet
      */
     private void showCustomersList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        try {
-            log.debug("showing table of Customers");
-            request.setAttribute("customers", getCustomerManager().findAll());
-            request.getRequestDispatcher(LIST_JSP).forward(request, response);
-        } catch (ApplicationException e) {
-            log.error("There was an error", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        log.debug("showing table of Customers");
+        request.setAttribute("customers", getCustomerManager().findAll());
+        request.getRequestDispatcher(LIST_JSP).forward(request, response);
     }
 
 }
