@@ -13,7 +13,7 @@ public interface HotelManager
 
     Reservation find(long id) throws ReservationNotFoundException, ApplicationException;
 
-    List<Reservation> findAll() throws ApplicationException;
+    List<Reservation> findAll();
 
     List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException;
 

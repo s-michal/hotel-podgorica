@@ -163,7 +163,7 @@ public class HotelManagerImpl implements HotelManager
         return new ArrayList<>();
     }
 
-    public List<Reservation> findAll() throws ApplicationException
+    public List<Reservation> findAll()
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -172,11 +172,11 @@ public class HotelManagerImpl implements HotelManager
                     ResultSet.CONCUR_UPDATABLE
             );
             return executeQueryForMultipleRows(statement.executeQuery());
-        } catch (SQLException e) {
+        } catch (SQLException | ApplicationException e) {
             String message = "Find all was unsuccessful";
             logger.error(message, e);
-            throw new ApplicationException(message, e);
         }
+        return new ArrayList<>();
     }
 
     private List<Reservation> executeQueryForMultipleRows(ResultSet result) throws ApplicationException, SQLException
