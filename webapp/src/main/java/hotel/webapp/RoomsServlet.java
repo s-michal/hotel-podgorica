@@ -1,9 +1,9 @@
 package hotel.webapp;
 
 import hotel.model.Room;
-import hotel.model.RoomManager;
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.DuplicateRoomNumberException;
+import hotel.model.exceptions.RoomHasReservationException;
 import hotel.model.exceptions.RoomNotFoundException;
 import hotel.webapp.forms.RoomForm;
 import org.slf4j.Logger;
@@ -11,13 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet(RoomsServlet.URL_MAPPING + "*")
-public class RoomsServlet extends HttpServlet
+public class RoomsServlet extends BaseServlet
 {
 
     private static final String LIST_JSP = "/templates/rooms/list.jsp";
@@ -84,7 +86,7 @@ public class RoomsServlet extends HttpServlet
             getRoomManager().delete(room);
             log.debug("redirecting after POST");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch(RoomNotFoundException e) {
+        } catch(RoomNotFoundException | RoomHasReservationException e) {
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
         }
     }
@@ -115,22 +117,18 @@ public class RoomsServlet extends HttpServlet
     }
 
     /**
-     * Gets RoomManager from ServletContext, where it was stored by {@link StartListener}.
-     *
-     * @return RoomManager instance
-     */
-    private RoomManager getRoomManager()
-    {
-        return (RoomManager) getServletContext().getAttribute("roomManager");
-    }
-
-    /**
      * Stores the list of Rooms to request attribute "Rooms" and forwards to the JSP to display it.
      */
     private void showRoomsList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         log.debug("showing table of Rooms");
-        request.setAttribute("rooms", getRoomManager().findAll());
+
+        List<Room> rooms = getRoomManager().findAll();
+        Map<Long, Integer> reservations = rooms.stream()
+                .collect(Collectors.toMap(Room::getId, r -> getHotelManager().findReservationByRoom(r).size()));
+
+        request.setAttribute("rooms", rooms);
+        request.setAttribute("reservations", reservations);
         request.getRequestDispatcher(LIST_JSP).forward(request, response);
     }
 

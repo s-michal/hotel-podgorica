@@ -1,6 +1,7 @@
 package hotel.model;
 
 import hotel.model.exceptions.ApplicationException;
+import hotel.model.exceptions.CustomerHasReservationsException;
 import hotel.model.exceptions.CustomerNotFoundException;
 
 import java.util.List;
@@ -18,5 +19,5 @@ public interface CustomerManager
 
     List<Customer> findAll();
 
-    void delete(Customer customer);
+    void delete(Customer customer) throws CustomerHasReservationsException;
 }

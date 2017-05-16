@@ -1,8 +1,8 @@
 package hotel.webapp;
 
 import hotel.model.Customer;
-import hotel.model.CustomerManager;
 import hotel.model.exceptions.ApplicationException;
+import hotel.model.exceptions.CustomerHasReservationsException;
 import hotel.webapp.forms.CustomerForm;
 import hotel.model.exceptions.CustomerNotFoundException;
 import hotel.webapp.forms.exceptions.ValidationException;
@@ -11,17 +11,19 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet(CustomersServlet.URL_MAPPING + "*")
-public class CustomersServlet extends HttpServlet
+public class CustomersServlet extends BaseServlet
 {
 
     private static final String LIST_JSP = "/templates/customers/list.jsp";
-    public static final String URL_MAPPING = "/customers/";
+    static final String URL_MAPPING = "/customers/";
 
     private final static Logger log = LoggerFactory.getLogger(CustomersServlet.class);
 
@@ -139,6 +141,10 @@ public class CustomersServlet extends HttpServlet
         } catch (CustomerNotFoundException e) {
             log.error("Cannot remove customer", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        } catch(CustomerHasReservationsException e) {
+            String message = "Cannot remove customer with reservations";
+            log.error(message);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
         }
     }
 
@@ -173,19 +179,22 @@ public class CustomersServlet extends HttpServlet
         return new CustomerForm(request, getCustomerManager());
     }
 
-    private CustomerManager getCustomerManager()
-    {
-        return (CustomerManager) getServletContext().getAttribute("customerManager");
-    }
-
     /**
      * Stores the list of Customers to request attribute "Customers" and forwards to the JSP to display it.
      */
     private void showCustomersList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         log.debug("showing table of Customers");
-        request.setAttribute("customers", getCustomerManager().findAll());
+
+        List<Customer> customers = getCustomerManager().findAll();
+
+        Map<Long,Integer> reservations = customers.stream()
+                .collect(Collectors.toMap(Customer::getId, c -> getHotelManager().findReservationsByCustomer(c).size()));
+
+        request.setAttribute("customers", customers);
+        request.setAttribute("reservations", reservations);
         request.getRequestDispatcher(LIST_JSP).forward(request, response);
+        getCustomerManager();
     }
 
 }

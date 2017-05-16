@@ -33,10 +33,8 @@
                 </div>
             </div>
         </div>
-
-        <hr>
-
         <c:if test="${empty customers}">
+            <hr>
             <div class="alert alert-info">There are no customers yet</div>
         </c:if>
         <c:if test="${not empty customers}">
@@ -46,6 +44,7 @@
                     <th>Name</th>
                     <th>Address</th>
                     <th>Birth date</th>
+                    <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <c:forEach items="${customers}" var="customer">
@@ -54,9 +53,11 @@
                         <td><c:out value="${customer.address}"/></td>
                         <td><c:out value="${customer.birthDate}"/></td>
                         <td>
+                            <c:if test="${reservations[customer.id] == 0}">
                             <form method="post" action="${pageContext.request.contextPath}/customers/delete?id=${customer.id}" style="display: inline-block">
                                 <input type="submit" class="btn btn-danger" value="Delete">
                             </form>
+                            </c:if>
                             <a href="${pageContext.request.contextPath}/customers/update?id=${customer.id}" class="btn btn-primary">Update</a>
                         </td>
                     </tr>

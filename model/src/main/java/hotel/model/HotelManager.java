@@ -11,16 +11,18 @@ import java.util.List;
 public interface HotelManager
 {
 
-    public Reservation find(long id) throws ReservationNotFoundException, ApplicationException;
+    Reservation find(long id) throws ReservationNotFoundException, ApplicationException;
 
-    public List<Reservation> findAll() throws ApplicationException;
+    List<Reservation> findAll() throws ApplicationException;
 
-    public List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException;
+    List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException;
 
-    public void placeReservation(Reservation reservation) throws ApplicationException;
+    void placeReservation(Reservation reservation) throws ApplicationException;
 
-    public void delete(Reservation reservation) throws ReservationNotFoundException;
+    void delete(Reservation reservation) throws ReservationNotFoundException;
 
-    public List<Reservation> findReservationByRoom(Room room) throws ApplicationException;
+    List<Reservation> findReservationByRoom(Room room);
+
+    List<Reservation> findReservationsByCustomer(Customer customer);
 
 }

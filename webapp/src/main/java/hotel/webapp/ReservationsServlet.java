@@ -1,6 +1,7 @@
 package hotel.webapp;
 
-import hotel.model.*;
+import hotel.model.Customer;
+import hotel.model.Room;
 import hotel.model.exceptions.ApplicationException;
 import hotel.webapp.forms.ReservationForm;
 import hotel.webapp.forms.exceptions.ValidationException;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @WebServlet(ReservationsServlet.URL_MAPPING + "*")
-public class ReservationsServlet extends HttpServlet
+public class ReservationsServlet extends BaseServlet
 {
 
     private static final String LIST_JSP = "/templates/reservations/list.jsp";
@@ -102,22 +102,6 @@ public class ReservationsServlet extends HttpServlet
     {
         return new ReservationForm(request, getHotelManager(), getCustomerManager(), getRoomManager());
     }
-
-    private CustomerManager getCustomerManager()
-    {
-        return (CustomerManager) getServletContext().getAttribute("customerManager");
-    }
-
-    private HotelManager getHotelManager()
-    {
-        return (HotelManager) getServletContext().getAttribute("hotelManager");
-    }
-
-    private RoomManager getRoomManager()
-    {
-        return (RoomManager) getServletContext().getAttribute("roomManager");
-    }
-
 
     /**
      * Stores the list of Reservations to request attribute "Reservations" and forwards to the JSP to display it.

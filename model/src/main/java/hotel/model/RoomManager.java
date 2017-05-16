@@ -2,6 +2,7 @@ package hotel.model;
 
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.DuplicateRoomNumberException;
+import hotel.model.exceptions.RoomHasReservationException;
 import hotel.model.exceptions.RoomNotFoundException;
 
 import java.math.BigDecimal;
@@ -25,5 +26,5 @@ public interface RoomManager
 
     List<Room> findAllInPrice(BigDecimal price) throws ApplicationException;
 
-    void delete(Room room);
+    void delete(Room room) throws RoomHasReservationException;
 }

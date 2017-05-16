@@ -49,6 +49,7 @@
                     <th>Capacity</th>
                     <th>Floor</th>
                     <th>Price / day</th>
+                    <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <c:forEach items="${rooms}" var="room">
@@ -57,8 +58,13 @@
                         <td><c:out value="${room.capacity}"/></td>
                         <td><c:out value="${room.floor}"/></td>
                         <td><c:out value="${room.pricePerDay}"/></td>
-                        <td><form method="post" action="${pageContext.request.contextPath}/rooms/delete?id=${room.id}"
-                                  style="margin-bottom: 0;"><input class="btn btn-danger" type="submit" value="Delete"></form></td>
+                        <td>
+                            <c:if test="${reservations[room.id] == 0}">
+                                <form method="post" action="${pageContext.request.contextPath}/rooms/delete?id=${room.id}" class="form-inline">
+                                    <input class="btn btn-danger" type="submit" value="Delete">
+                                </form>
+                            </c:if>
+                        </td>
                     </tr>
                 </c:forEach>
             </table>
