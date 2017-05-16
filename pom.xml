@@ -7,6 +7,7 @@
     <modules>
         <module>model</module>
         <module>webapp</module>
+        <module>hotelgui</module>
     </modules>
     <repositories>
         <repository>
