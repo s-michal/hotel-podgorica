@@ -8,9 +8,6 @@ import hotel.model.exceptions.RoomNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Created by uzivatel on 14.3.2017.
- */
 public interface RoomManager
 {
 

@@ -4,9 +4,6 @@ package hotel.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-/**
- * Created by xsustera on 8.3.17.
- */
 public class Customer implements Serializable
 {
 

@@ -3,9 +3,6 @@ package hotel.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * Created by uzivatel on 14.3.2017.
- */
 public class Room implements Serializable
 {
 
