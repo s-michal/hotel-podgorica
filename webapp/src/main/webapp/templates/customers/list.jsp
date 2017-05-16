@@ -53,9 +53,12 @@
                         <td><c:out value="${customer.name}"/></td>
                         <td><c:out value="${customer.address}"/></td>
                         <td><c:out value="${customer.birthDate}"/></td>
-                        <td><form method="post" action="${pageContext.request.contextPath}/customers/delete?id=${customer.id}"
-                                  style="margin-bottom: 0;"><input type="submit" value="Delete"></form></td>
-                        <td><a href="${pageContext.request.contextPath}/customers/update?id=${customer.id}">Update</a></td>
+                        <td>
+                            <form method="post" action="${pageContext.request.contextPath}/customers/delete?id=${customer.id}" style="display: inline-block">
+                                <input type="submit" class="btn btn-danger" value="Delete">
+                            </form>
+                            <a href="${pageContext.request.contextPath}/customers/update?id=${customer.id}" class="btn btn-primary">Update</a>
+                        </td>
                     </tr>
                 </c:forEach>
             </table>

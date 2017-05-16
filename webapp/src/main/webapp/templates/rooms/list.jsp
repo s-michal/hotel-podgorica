@@ -58,7 +58,7 @@
                         <td><c:out value="${room.floor}"/></td>
                         <td><c:out value="${room.pricePerDay}"/></td>
                         <td><form method="post" action="${pageContext.request.contextPath}/rooms/delete?id=${room.id}"
-                                  style="margin-bottom: 0;"><input type="submit" value="Delete"></form></td>
+                                  style="margin-bottom: 0;"><input class="btn btn-danger" type="submit" value="Delete"></form></td>
                     </tr>
                 </c:forEach>
             </table>
