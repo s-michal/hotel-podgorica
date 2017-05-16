@@ -1,29 +1,29 @@
 package hotel.gui.rooms;
 
-import hotel.model.HotelManager;
-import hotel.model.Reservation;
+import hotel.gui.BaseModel;
 import hotel.model.Room;
 import hotel.model.RoomManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.table.AbstractTableModel;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-public class RoomsModel extends AbstractTableModel
+public class RoomsModel extends BaseModel<Room>
 {
 
     private RoomManager manager;
     private List<Room> rooms;
-    private String[] columnNames = {"Number", "Capacity", "Floor", "Price per day"};
 
-    private static Logger logger = LoggerFactory.getLogger(hotel.gui.reservations.ReservationsModel.class);
+    private static Logger logger = LoggerFactory.getLogger(RoomsModel.class);
 
-    public RoomsModel(RoomManager manager)
+    RoomsModel(RoomManager manager)
     {
+        super(
+                new String[] {"Number", "Capacity", "Floor", "Price per day"},
+                new Class<?>[] {Long.class, Integer.class, Integer.class, BigDecimal.class}
+        );
+
         Objects.requireNonNull(manager);
         this.manager = manager;
     }
@@ -35,21 +35,9 @@ public class RoomsModel extends AbstractTableModel
     }
 
     @Override
-    public String getColumnName(int columnIndex)
+    protected Object getColumnValue(int rowIndex, int columnIndex)
     {
-        return columnNames[columnIndex];
-    }
-
-    @Override
-    public int getColumnCount()
-    {
-        return 4;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
-        Room room = getRooms().get(rowIndex);
+        Room room = getRow(rowIndex);
         switch (columnIndex) {
             case 0:
                 return room.getNumber();
@@ -59,35 +47,29 @@ public class RoomsModel extends AbstractTableModel
                 return room.getFloor();
             case 3:
                 return room.getPricePerDay();
-            default:
-                throw new IllegalArgumentException("columnIndex");
         }
+        throw new IllegalArgumentException("columnIndex");
     }
 
     @Override
-    public Class<?> getColumnClass(int columnIndex)
+    protected Room getRow(int rowIndex)
     {
-        switch (columnIndex) {
-            case 0:
-                return Long.class;
-            case 1:
-                return Integer.class;
-            case 2:
-                return Integer.class;
-            case 3:
-                return BigDecimal.class;
-            default:
-                throw new IllegalArgumentException("columnIndex");
-        }
+        return getRooms().get(rowIndex);
+    }
+
+    public void invalidate()
+    {
+        rooms = null;
+        fireTableDataChanged();
     }
 
     private List<Room> getRooms()
     {
-        if (this.rooms == null) {
+        if (rooms == null) {
             logger.debug("Loading rooms");
-            this.rooms = manager.findAll();
+            rooms = manager.findAll();
         }
-        return this.rooms;
+        return rooms;
     }
 
 }

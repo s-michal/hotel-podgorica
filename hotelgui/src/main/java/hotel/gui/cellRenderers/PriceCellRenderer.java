@@ -1,14 +1,10 @@
-package hotel.gui.utils;
+package hotel.gui.cellRenderers;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.math.BigDecimal;
 import java.util.Currency;
 
-/**
- * Created by fmasa on 16.5.17.
- */
 public class PriceCellRenderer extends DefaultTableCellRenderer
 {
 

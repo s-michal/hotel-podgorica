@@ -1,27 +1,29 @@
 package hotel.gui.reservations;
 
-import hotel.gui.Context;
+import hotel.gui.BaseView;
 import hotel.model.HotelManager;
 
 import javax.swing.*;
 import java.util.Objects;
 
-public class ReservationList
+public class ReservationList extends BaseView
 {
-    private JPanel topPanel;
-    private JTable table1;
-
-    private Context context;
+    private JPanel panel;
+    private JTable table;
+    private JButton createButton;
 
     public ReservationList(HotelManager manager)
     {
         Objects.requireNonNull(manager);
-        this.table1.setModel(new ReservationsModel(manager));
+        ReservationsModel model = new ReservationsModel(manager);
+
+        table.setModel(model);
+        createButton.setText(translate("reservation.button.place"));
     }
 
     public JPanel getPanel()
     {
-        return topPanel;
+        return panel;
     }
 
 }

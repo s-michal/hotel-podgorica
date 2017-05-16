@@ -20,7 +20,7 @@ public class MainView extends BaseView
         ReservationList reservationList = new ReservationList(context.getHotelManager());
         panel.addTab(translate("tabs.Reservations"), null, reservationList.getPanel());
 
-        RoomsList roomsList = new RoomsList(context.getRoomManager());
+        RoomsList roomsList = new RoomsList(context.getRoomManager(), context.getHotelManager());
         panel.addTab(translate("tabs.Rooms"), null, roomsList.getPanel());
 
         setLookAndFeel();

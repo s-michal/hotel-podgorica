@@ -29,7 +29,7 @@ public class RoomForm extends BaseView
 
     private Runnable onSuccess;
 
-    RoomForm(RoomManager roomManager)
+    RoomForm(RoomManager roomManager, Room room)
     {
         Objects.requireNonNull(roomManager);
         this.roomManager = roomManager;
@@ -39,7 +39,13 @@ public class RoomForm extends BaseView
         priceLabel.setText(translate("roomPrice"));
         button1.setText(translate("createButton"));
 
-        button1.addActionListener(e -> createRoom());
+        if(room != null) {
+            numberField.setText(""+room.getNumber());
+            floorCombobox.setSelectedIndex(room.getFloor() - 1);
+            capacityField.setText(""+room.getCapacity());
+            priceField.setText(room.getPricePerDay().toString());
+        }
+        button1.addActionListener(e -> createOrUpdate(room));
     }
 
     @Override
@@ -53,7 +59,7 @@ public class RoomForm extends BaseView
         this.onSuccess = onSuccess;
     }
 
-    private void createRoom()
+    private void createOrUpdate(Room room)
     {
         ArrayList<String> errors = new ArrayList<>();
 
@@ -93,7 +99,12 @@ public class RoomForm extends BaseView
 
         if(errors.isEmpty()) {
             try {
-                roomManager.create(new Room(number, capacity, floor, price));
+                if(room != null) {
+                    room.update(number, capacity, floor, price);
+                    roomManager.update(room);
+                } else {
+                    roomManager.create(new Room(number, capacity, floor, price));
+                }
             } catch(DuplicateRoomNumberException e) {
                 errors.add(translate("erorrs.room.duplicateNumber"));
             } catch(ApplicationException e) {

@@ -1,27 +1,31 @@
 package hotel.gui.reservations;
 
+import hotel.gui.BaseModel;
 import hotel.model.HotelManager;
 import hotel.model.Reservation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.table.AbstractTableModel;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-public class ReservationsModel extends AbstractTableModel
+public class ReservationsModel extends BaseModel<Reservation>
 {
 
     private HotelManager manager;
     private List<Reservation> reservations;
-    private String[] columnNames = {"ID", "Customer", "Since", "Until", "Room", "Price"};
 
     private static Logger logger = LoggerFactory.getLogger(ReservationsModel.class);
 
     public ReservationsModel(HotelManager manager)
     {
+        super(
+                new String[] {"ID", "Customer", "Since", "Until", "Room", "Price"},
+                new Class<?>[] {Long.class, String.class, LocalDate.class, LocalDate.class, Long.class, BigDecimal.class}
+        );
+
         Objects.requireNonNull(manager);
         this.manager = manager;
     }
@@ -33,22 +37,10 @@ public class ReservationsModel extends AbstractTableModel
     }
 
     @Override
-    public String getColumnName(int columnIndex)
+    protected Object getColumnValue(int rowIndex, int columnIndex)
     {
-        return columnNames[columnIndex];
-    }
-
-    @Override
-    public int getColumnCount()
-    {
-        return 6;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex)
-    {
-        Reservation reservation = getReservations().get(rowIndex);
-        switch (columnIndex) {
+        Reservation reservation = getRow(rowIndex);
+        switch(columnIndex) {
             case 0:
                 return reservation.getId();
             case 1:
@@ -61,30 +53,14 @@ public class ReservationsModel extends AbstractTableModel
                 return reservation.getRoom().getNumber();
             case 5:
                 return reservation.getTotalPrice();
-            default:
-                throw new IllegalArgumentException("columnIndex");
         }
+        throw new IllegalArgumentException("columnIndex");
     }
 
     @Override
-    public Class<?> getColumnClass(int columnIndex)
+    protected Reservation getRow(int rowIndex)
     {
-        switch (columnIndex) {
-            case 0:
-                return Long.class;
-            case 1:
-                return String.class;
-            case 2:
-                return LocalDate.class;
-            case 3:
-                return LocalDate.class;
-            case 4:
-                return Long.class;
-            case 5:
-                return BigDecimal.class;
-            default:
-                throw new IllegalArgumentException("columnIndex");
-        }
+        return getReservations().get(rowIndex);
     }
 
     private List<Reservation> getReservations()
