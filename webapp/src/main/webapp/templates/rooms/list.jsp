@@ -14,24 +14,24 @@
                             <c:out value="${error}"/>
                         </div>
                     </c:if>
-                    <form action="${pageContext.request.contextPath}/rooms/add" method="post">
+                    <form action="${pageContext.request.contextPath}/rooms/${formTarget}" method="post">
                         <div class="form-group">
                             <label for="numberInput">Room number</label>
-                            <input type="number" id="numberInput" class="form-control" name="number" value="<c:out value='${param.number}'/>">
+                            <input type="number" id="numberInput" class="form-control" name="number" value="<c:out value='${number}'/>">
                         </div>
                         <div class="form-group">
                             <label for="capacityInput">Capacity</label>
-                            <input type="number" id="capacityInput" class="form-control" name="capacity" value="<c:out value='${param.capacity}'/>"></td>
+                            <input type="number" id="capacityInput" class="form-control" name="capacity" value="<c:out value='${capacity}'/>"></td>
                         </div>
                         <div class="form-group">
                             <label for="floorInput">Floor</label>
-                            <input type="number" id="floorInput" class="form-control" name="floor" value="<c:out value='${param.floor}'/>"></td>
+                            <input type="number" id="floorInput" class="form-control" name="floor" value="<c:out value='${floor}'/>"></td>
                         </div>
                         <div class="form-group">
                             <label for="pricePerDayInput">Price/Day:</label>
-                            <input type="number" id="pricePerDayInput" class="form-control" name="pricePerDay" value="<c:out value='${param.pricePerDay}'/>"></td>
+                            <input type="number" id="pricePerDayInput" class="form-control" name="pricePerDay" value="<c:out value='${pricePerDay}'/>"></td>
                         </div>
-                        <input type="Submit" value="Add" class="btn btn-primary">
+                        <input type="Submit" class="btn btn-primary" value="Register">
                     </form>
                 </div>
             </div>
@@ -60,10 +60,11 @@
                         <td><c:out value="${room.pricePerDay}"/></td>
                         <td>
                             <c:if test="${reservations[room.id] == 0}">
-                                <form method="post" action="${pageContext.request.contextPath}/rooms/delete?id=${room.id}" class="form-inline">
+                                <form method="post" action="${pageContext.request.contextPath}/rooms/delete?id=${room.id}" style="display: inline-block">
                                     <input class="btn btn-danger" type="submit" value="Delete">
                                 </form>
                             </c:if>
+                            <a href="${pageContext.request.contextPath}/rooms/update?id=${room.id}" class="btn btn-primary">Update</a>
                         </td>
                     </tr>
                 </c:forEach>

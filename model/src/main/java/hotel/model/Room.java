@@ -82,6 +82,26 @@ public class Room implements Serializable
         this.pricePerDay = pricePerDay;
     }
 
+    public void update(long number, int capacity, int floor, BigDecimal pricePerDay)
+    {
+        if(number <= 0) {
+            throw new IllegalArgumentException("Number must be greater than 0");
+        }
+        if(capacity <= 0) {
+            throw new IllegalArgumentException("Capacity must be greater than 0");
+        }
+        if(floor <= 0) {
+            throw new IllegalArgumentException("Floor must be greater than 0");
+        }
+        if(pricePerDay == null){
+            throw new IllegalArgumentException("Room must have a price");
+        }
+        this.number = number;
+        this.capacity = capacity;
+        this.floor = floor;
+        this.pricePerDay = pricePerDay;
+    }
+
     @Override
     public boolean equals(Object o)
     {
