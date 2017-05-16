@@ -37,7 +37,7 @@
 </nav>
 
 <div class="container">
-    <h1 style="margin: 1em"><jsp:invoke fragment="title"/></h1>
+    <h1 style="margin: 1em 0 1em 0"><jsp:invoke fragment="title"/></h1>
     <jsp:doBody/>
 </div>
 
