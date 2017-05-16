@@ -3,7 +3,10 @@ package hotel.model;
 import hotel.model.database.Association;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 public class Reservation implements Serializable
 {
@@ -58,6 +61,12 @@ public class Reservation implements Serializable
     public Room getRoom()
     {
         return room;
+    }
+
+    public BigDecimal getTotalPrice()
+    {
+        return room.getPricePerDay()
+                .multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(since, until)));
     }
 
     @Override

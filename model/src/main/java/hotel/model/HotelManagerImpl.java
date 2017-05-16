@@ -121,7 +121,7 @@ public class HotelManagerImpl implements HotelManager
         }
     }
 
-    public List<Reservation> findReservationByRoom(Room room) throws ApplicationException
+    public List<Reservation> findReservationByRoom(Room room)
     {
         Objects.requireNonNull(room);
         Objects.requireNonNull(room.getId());
@@ -134,14 +134,36 @@ public class HotelManagerImpl implements HotelManager
             );
             statement.setLong(1, room.getId());
             return executeQueryForMultipleRows(statement.executeQuery());
-        } catch (SQLException e) {
+        } catch (SQLException | ApplicationException e) {
             String message = "Find by room was unsuccessful";
             logger.error(message, e);
-            throw new ApplicationException(message, e);
         }
+
+        return new ArrayList<>();
     }
 
-    public List<Reservation> findAll() throws ApplicationException
+    public List<Reservation> findReservationsByCustomer(Customer customer)
+    {
+        Objects.requireNonNull(customer);
+        Objects.requireNonNull(customer.getId());
+
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(
+                    QUERY+ "WHERE \"customer_id\" = ?",
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE
+            );
+            statement.setLong(1, customer.getId());
+            return executeQueryForMultipleRows(statement.executeQuery());
+        } catch (SQLException | ApplicationException e) {
+            String message = "Find by room was unsuccessful";
+            logger.error(message, e);
+        }
+
+        return new ArrayList<>();
+    }
+
+    public List<Reservation> findAll()
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -150,11 +172,11 @@ public class HotelManagerImpl implements HotelManager
                     ResultSet.CONCUR_UPDATABLE
             );
             return executeQueryForMultipleRows(statement.executeQuery());
-        } catch (SQLException e) {
+        } catch (SQLException | ApplicationException e) {
             String message = "Find all was unsuccessful";
             logger.error(message, e);
-            throw new ApplicationException(message, e);
         }
+        return new ArrayList<>();
     }
 
     private List<Reservation> executeQueryForMultipleRows(ResultSet result) throws ApplicationException, SQLException

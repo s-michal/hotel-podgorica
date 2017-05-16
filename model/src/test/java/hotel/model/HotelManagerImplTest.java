@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.*;
 import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.database.ReservationHydrator;
+import hotel.model.exceptions.CustomerHasReservationsException;
 import hotel.model.exceptions.ReservationNotFoundException;
+import hotel.model.exceptions.RoomHasReservationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,6 +66,24 @@ public class HotelManagerImplTest extends TestWithDatabase
 
         assertThat(reservation.getId())
                 .isNotNull();
+    }
+
+    @Test
+    public void userWithReservationCantBeRemoved() throws Exception
+    {
+        Customer customer = getCustomer();
+        manager.placeReservation(createReservation(getRoom(4), customer));
+
+        assertThatThrownBy(() -> customers.delete(customer)).isInstanceOf(CustomerHasReservationsException.class);
+    }
+
+    @Test
+    public void roomWithReservationCantBeRemoved() throws Exception
+    {
+        Room room = getRoom(50);
+        manager.placeReservation(createReservation(room, getCustomer()));
+
+        assertThatThrownBy(() -> rooms.delete(room)).isInstanceOf(RoomHasReservationException.class);
     }
 
     @Test

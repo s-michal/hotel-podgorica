@@ -3,7 +3,7 @@ package hotel.webapp.forms;
 import hotel.model.Customer;
 import hotel.model.CustomerManager;
 import hotel.model.exceptions.ApplicationException;
-import hotel.webapp.forms.exceptions.CustomerNotFoundException;
+import hotel.model.exceptions.CustomerNotFoundException;
 import hotel.webapp.forms.exceptions.ValidationException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,18 +24,14 @@ public class CustomerForm
         this.manager = manager;
     }
 
-    public void setId(long id) throws CustomerNotFoundException, ApplicationException
+    public void setId(long id) throws CustomerNotFoundException
     {
         customer = manager.find(id);
-
-        if(customer == null) {
-            throw new CustomerNotFoundException();
-        }
     }
 
     public void render()
     {
-        if(this.customer == null) {
+        if (this.customer == null) {
             return;
         }
 
@@ -55,20 +51,20 @@ public class CustomerForm
         LocalDate birthDate;
         try {
             birthDate = LocalDate.parse(request.getParameter("birthDate"));
-        } catch(DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             throw new ValidationException(e);
         }
 
         request.setAttribute("birthDate", birthDate);
 
         try {
-            if(this.customer == null) {
+            if (this.customer == null) {
                 create(name, address, birthDate);
                 return;
             }
 
             update(name, address, birthDate);
-        } catch( IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new ValidationException(e);
         }
     }

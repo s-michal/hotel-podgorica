@@ -3,6 +3,8 @@ package hotel.model;
 import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.exceptions.ApplicationException;
+import hotel.model.exceptions.CustomerHasReservationsException;
+import hotel.model.exceptions.CustomerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +55,7 @@ public class CustomerManagerImpl implements CustomerManager
         persister.update(customer, customer.getId());
     }
 
-    public Customer find(Long id) throws ApplicationException
+    public Customer find(Long id) throws CustomerNotFoundException
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -64,9 +66,11 @@ public class CustomerManagerImpl implements CustomerManager
             return executeQueryForSingleRow(statement);
         } catch (SQLException e) {
             logger.error("Find was unsuccessful", e);
+        } catch(ApplicationException e) {
+            throw new RuntimeException(e);
         }
 
-        return null;
+        throw new CustomerNotFoundException("There is no room with customer " + id);
     }
 
     public List<Customer> findByName(String name) throws ApplicationException
@@ -85,7 +89,7 @@ public class CustomerManagerImpl implements CustomerManager
         return null;
     }
 
-    public List<Customer> findAll() throws ApplicationException
+    public List<Customer> findAll()
     {
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -94,15 +98,22 @@ public class CustomerManagerImpl implements CustomerManager
             return executeQueryForMultipleRows(statement);
         } catch (SQLException e) {
             logger.error("Find all was unsuccessful", e);
+        } catch(ApplicationException e) {
+            logger.error("Something went wrong while hydrating data");
+            throw new RuntimeException(e);
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
-    public void delete(Customer customer)
+    public void delete(Customer customer) throws CustomerHasReservationsException
     {
         Objects.requireNonNull(customer);
         Objects.requireNonNull(customer.getId());
+
+        if(hasReservations(customer.getId())) {
+            throw new CustomerHasReservationsException("Cannot remove customer with reservations");
+        }
 
         try (Connection conn = dataSource.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(
@@ -114,6 +125,24 @@ public class CustomerManagerImpl implements CustomerManager
         } catch (SQLException e) {
             logger.error("User couldn't be deleted", e);
         }
+    }
+
+    private boolean hasReservations(long id)
+    {
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("SELECT COUNT(*) FROM \"reservation\" WHERE \"customer_id\" = ?");
+
+            statement.setLong(1, id);
+
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                return result.getInt(1) != 0;
+            }
+        } catch (SQLException e) {
+            logger.error("User couldn't be deleted", e);
+        }
+
+        return false;
     }
 
     private Customer executeQueryForSingleRow(PreparedStatement statement) throws SQLException, ApplicationException

@@ -1,27 +1,29 @@
 package hotel.webapp;
 
 import hotel.model.Customer;
-import hotel.model.CustomerManager;
 import hotel.model.exceptions.ApplicationException;
+import hotel.model.exceptions.CustomerHasReservationsException;
 import hotel.webapp.forms.CustomerForm;
-import hotel.webapp.forms.exceptions.CustomerNotFoundException;
+import hotel.model.exceptions.CustomerNotFoundException;
 import hotel.webapp.forms.exceptions.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet(CustomersServlet.URL_MAPPING + "*")
-public class CustomersServlet extends HttpServlet
+public class CustomersServlet extends BaseServlet
 {
 
     private static final String LIST_JSP = "/templates/customers/list.jsp";
-    public static final String URL_MAPPING = "/customers/";
+    static final String URL_MAPPING = "/customers/";
 
     private final static Logger log = LoggerFactory.getLogger(CustomersServlet.class);
 
@@ -32,7 +34,7 @@ public class CustomersServlet extends HttpServlet
 
         log.debug("GET ...");
 
-        switch(request.getPathInfo()) {
+        switch (request.getPathInfo()) {
             case "/update":
                 getUpdate(request, response);
                 return;
@@ -50,7 +52,7 @@ public class CustomersServlet extends HttpServlet
         try {
             createForm(request).process(request);
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch(ValidationException e) {
+        } catch (ValidationException e) {
             log.debug("Form data invalid");
             request.setAttribute("error", "You entered invalid data");
             showCustomersList(request, response);
@@ -69,19 +71,15 @@ public class CustomersServlet extends HttpServlet
             return;
         }
 
-        request.setAttribute("formTarget", "update?id="+id);
+        request.setAttribute("formTarget", "update?id=" + id);
 
         CustomerForm form = createForm(request);
 
         try {
             form.setId(id);
-        } catch(CustomerNotFoundException e) {
+        } catch (CustomerNotFoundException e) {
             log.debug("Customer not found");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-            return;
-        } catch (ApplicationException e) {
-            log.error("Cannot edit customer", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             return;
         }
 
@@ -99,7 +97,7 @@ public class CustomersServlet extends HttpServlet
         }
 
 
-        request.setAttribute("formTarget", "update?id="+id);
+        request.setAttribute("formTarget", "update?id=" + id);
 
         CustomerForm form = createForm(request);
 
@@ -107,10 +105,10 @@ public class CustomersServlet extends HttpServlet
             form.setId(id);
             form.process(request);
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch(CustomerNotFoundException e) {
+        } catch (CustomerNotFoundException e) {
             log.debug("Customer not found");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch(ValidationException e) {
+        } catch (ValidationException e) {
             log.debug("Form data invalid");
             request.setAttribute("error", "You entered invalid data");
             showCustomersList(request, response);
@@ -140,9 +138,13 @@ public class CustomersServlet extends HttpServlet
             getCustomerManager().delete(customer);
             log.debug("redirecting after POST");
             response.sendRedirect(request.getContextPath() + URL_MAPPING);
-        } catch (ApplicationException e) {
+        } catch (CustomerNotFoundException e) {
             log.error("Cannot remove customer", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        } catch(CustomerHasReservationsException e) {
+            String message = "Cannot remove customer with reservations";
+            log.error(message);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
         }
     }
 
@@ -177,24 +179,22 @@ public class CustomersServlet extends HttpServlet
         return new CustomerForm(request, getCustomerManager());
     }
 
-    private CustomerManager getCustomerManager()
-    {
-        return (CustomerManager) getServletContext().getAttribute("customerManager");
-    }
-
     /**
      * Stores the list of Customers to request attribute "Customers" and forwards to the JSP to display it.
      */
     private void showCustomersList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        try {
-            log.debug("showing table of Customers");
-            request.setAttribute("customers", getCustomerManager().findAll());
-            request.getRequestDispatcher(LIST_JSP).forward(request, response);
-        } catch (ApplicationException e) {
-            log.error("There was an error", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        log.debug("showing table of Customers");
+
+        List<Customer> customers = getCustomerManager().findAll();
+
+        Map<Long,Integer> reservations = customers.stream()
+                .collect(Collectors.toMap(Customer::getId, c -> getHotelManager().findReservationsByCustomer(c).size()));
+
+        request.setAttribute("customers", customers);
+        request.setAttribute("reservations", reservations);
+        request.getRequestDispatcher(LIST_JSP).forward(request, response);
+        getCustomerManager();
     }
 
 }

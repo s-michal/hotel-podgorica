@@ -99,9 +99,11 @@ public class Persister<T>
             Object value;
             for (Field field : fields) {
                 field.setAccessible(true);
+                logger.debug(String.format("Attempting to bind field '%s'", field.getName()));
                 value = getPropertyValue(field, entity);
                 logger.debug(String.format("Binding field '%s': %s", field.getName(), value));
                 set(statement, i++, value);
+                logger.debug(String.format("Field bounded '%s': %s", field.getName(), value));
             }
 
             statement.execute();

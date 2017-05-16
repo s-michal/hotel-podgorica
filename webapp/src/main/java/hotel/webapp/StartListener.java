@@ -27,7 +27,10 @@ public class StartListener implements ServletContextListener
 
         ServletContext context = ev.getServletContext();
 
-        DataSource ds = DatasourceFactory.create("memory:main");
+        DataSource ds = DatasourceFactory.create("memory:main", new String[] {
+                "/sql/up.sql",
+                "/sql/data.sql",
+        });
 
         Hydrator<Customer> customerHydrator = new Hydrator<>(Customer.class);
         Hydrator<Room> roomHydrator = new Hydrator<>(Room.class);
