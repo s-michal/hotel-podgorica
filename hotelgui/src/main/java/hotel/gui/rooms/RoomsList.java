@@ -62,6 +62,7 @@ public class RoomsList extends BaseView
         table.setDefaultRenderer(JButton.class, new ButtonRenderer());
         table.addMouseListener(new ButtonMouseListener(table));
 
+        createNewRoomButton.setText(translate("button.createNewRoom"));
         createNewRoomButton.addActionListener(e -> openFormFrame(null));
     }
 
