@@ -24,6 +24,8 @@ public class RoomsList extends BaseView
     private JTable table;
     private JButton createNewRoomButton;
 
+    private RoomsModel model;
+
     public RoomsList(RoomManager roomManager, HotelManager hotelManager)
     {
         Objects.requireNonNull(roomManager);
@@ -31,31 +33,10 @@ public class RoomsList extends BaseView
 
         this.roomManager = roomManager;
 
-        RoomsModel model = new RoomsModel(roomManager);
+        model = new RoomsModel(roomManager, hotelManager);
 
-        model.addButton(room -> {
-            JButton button = new JButton(translate("button.update"));
-            button.addActionListener(e -> openFormFrame(room));
-            return button;
-        });
-
-        model.addButton(room -> {
-            JButton button = new JButton(translate("button.delete"));
-            if (hotelManager.findReservationByRoom(room).size() > 0) {
-                button.setEnabled(false);
-                return button;
-            }
-
-            button.addActionListener(x -> {
-                try {
-                    roomManager.delete(room);
-                    model.invalidate();
-                } catch (RoomHasReservationException e) {
-                }
-            });
-
-            return button;
-        });
+        model.addButton(this::createUpdateButton);
+        model.addButton(this::createDeleteButton);
 
         table.setModel(model);
         table.setDefaultRenderer(BigDecimal.class, new PriceCellRenderer());
@@ -85,9 +66,34 @@ public class RoomsList extends BaseView
 
         frame.setContentPane(view.getPanel());
 
-        frame.setPreferredSize(new Dimension(800, 600));
+        frame.setPreferredSize(new Dimension(500, 400));
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private JButton createUpdateButton(Room room)
+    {
+        JButton button = new JButton(translate("button.update"));
+        button.addActionListener(e -> openFormFrame(room));
+        return button;
+    }
+
+    private JButton createDeleteButton(Room room)
+    {
+        JButton button = new JButton(translate("button.delete"));
+        if (model.hasReservations(room)) {
+            button.setEnabled(false);
+            return button;
+        }
+
+        button.addActionListener(x -> {
+            try {
+                model.deleteRoom(room);
+            } catch (RoomHasReservationException e) {
+            }
+        });
+
+        return button;
     }
 
 }

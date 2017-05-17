@@ -1,8 +1,10 @@
 package hotel.gui.rooms;
 
 import hotel.gui.BaseModel;
+import hotel.model.HotelManager;
 import hotel.model.Room;
 import hotel.model.RoomManager;
+import hotel.model.exceptions.RoomHasReservationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +15,12 @@ public class RoomsModel extends BaseModel<Room>
 {
 
     private RoomManager manager;
+    private HotelManager hotelManager;
     private List<Room> rooms;
 
     private static Logger logger = LoggerFactory.getLogger(RoomsModel.class);
 
-    RoomsModel(RoomManager manager)
+    RoomsModel(RoomManager manager, HotelManager hotelManager)
     {
         super(
                 new String[] {"Number", "Capacity", "Floor", "Price per day"},
@@ -25,7 +28,9 @@ public class RoomsModel extends BaseModel<Room>
         );
 
         Objects.requireNonNull(manager);
+        Objects.requireNonNull(hotelManager);
         this.manager = manager;
+        this.hotelManager = hotelManager;
     }
 
     @Override
@@ -61,6 +66,23 @@ public class RoomsModel extends BaseModel<Room>
     {
         rooms = null;
         fireTableDataChanged();
+    }
+
+    public void deleteRoom(Room room) throws RoomHasReservationException
+    {
+        try {
+            manager.delete(room);
+        } catch(RoomHasReservationException e) {
+            throw e;
+        } finally
+        {
+            invalidate();
+        }
+    }
+
+    public boolean hasReservations(Room room)
+    {
+        return hotelManager.findReservationByRoom(room).size() > 0;
     }
 
     private List<Room> getRooms()
