@@ -3,6 +3,8 @@ package hotel.gui.reservations;
 import hotel.gui.BaseModel;
 import hotel.model.HotelManager;
 import hotel.model.Reservation;
+import hotel.model.exceptions.ReservationCannotBeCanceledNow;
+import org.mockito.cglib.core.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,18 @@ public class ReservationsModel extends BaseModel<Reservation>
         throw new IllegalArgumentException("columnIndex");
     }
 
+    public void cancelReservation(Reservation reservation) throws ReservationCannotBeCanceledNow
+    {
+        try {
+            reservation.cancel(LocalDate.now());
+            manager.update(reservation);
+        } catch(ReservationCannotBeCanceledNow e) {
+            throw e;
+        } finally {
+            invalidate();
+        }
+    }
+
     @Override
     protected Reservation getRow(int rowIndex)
     {
@@ -70,6 +84,12 @@ public class ReservationsModel extends BaseModel<Reservation>
             this.reservations = manager.findAll();
         }
         return this.reservations;
+    }
+
+    private void invalidate()
+    {
+        this.reservations = null;
+        fireTableDataChanged();
     }
 
 }

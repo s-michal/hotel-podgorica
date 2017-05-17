@@ -150,6 +150,8 @@ public class Persister<T>
             statement.setBigDecimal(position, (BigDecimal) value);
         } else if (value instanceof Integer) {
             statement.setInt(position, (Integer) value);
+        } else if (value instanceof Boolean) {
+            statement.setBoolean(position, (Boolean) value);
         }
     }
 

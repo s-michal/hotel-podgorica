@@ -18,5 +18,6 @@ CREATE TABLE "reservation" (
   "room_id" BIGINT NOT NULL,
   "customer_id" BIGINT NOT NULL UNIQUE,
   "since" DATE NOT NULL,
-  "until" DATE NOT NULL
+  "until" DATE NOT NULL,
+  "canceled" BOOLEAN NOT NULL
 );

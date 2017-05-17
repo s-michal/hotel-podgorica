@@ -142,6 +142,17 @@ public class HotelManagerImpl implements HotelManager
         return new ArrayList<>();
     }
 
+    @Override
+    public void update(Reservation reservation)
+    {
+        Objects.requireNonNull(reservation);
+        Objects.requireNonNull(reservation.getId());
+        try {
+            persister.update(reservation, reservation.getId());
+        } catch(ApplicationException e) {
+        }
+    }
+
     public List<Reservation> findReservationsByCustomer(Customer customer)
     {
         Objects.requireNonNull(customer);

@@ -25,4 +25,6 @@ public interface HotelManager
 
     List<Reservation> findReservationsByCustomer(Customer customer);
 
+    void update(Reservation reservation);
+
 }

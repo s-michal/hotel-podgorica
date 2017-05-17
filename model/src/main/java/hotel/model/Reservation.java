@@ -1,11 +1,11 @@
 package hotel.model;
 
 import hotel.model.database.Association;
+import hotel.model.exceptions.ReservationCannotBeCanceledNow;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 public class Reservation implements Serializable
@@ -21,6 +21,8 @@ public class Reservation implements Serializable
 
     private LocalDate since;
     private LocalDate until;
+
+    private boolean canceled = false;
 
     public Reservation(Room room, Customer customer, LocalDate since, LocalDate until)
     {
@@ -41,6 +43,14 @@ public class Reservation implements Serializable
     public Long getId()
     {
         return id;
+    }
+
+    public void cancel(LocalDate now) throws ReservationCannotBeCanceledNow
+    {
+        if(now == null || now.isAfter(since)) {
+            throw new ReservationCannotBeCanceledNow();
+        }
+        canceled = true;
     }
 
     public Customer getCustomer()
@@ -78,6 +88,11 @@ public class Reservation implements Serializable
         Reservation that = (Reservation) o;
 
         return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    public boolean isCanceled()
+    {
+        return canceled;
     }
 
     @Override

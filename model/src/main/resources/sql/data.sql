@@ -12,5 +12,5 @@ INSERT INTO "room" ("number", "floor", "capacity", "price_per_day")
       (4, 2, 5, 300),
       (29, 10, 2, 1500);
 
-INSERT INTO "reservation" ("customer_id", "room_id", "since", "until")
-    VALUES (1, 1, '2017-05-31', '2017-06-04');
+INSERT INTO "reservation" ("customer_id", "room_id", "since", "until", "canceled")
+    VALUES (1, 1, '2017-05-31', '2017-06-04', FALSE);

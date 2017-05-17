@@ -15,7 +15,7 @@ abstract class TestWithDatabase
     protected DataSource getDataSource() throws Exception
     {
         if(ds == null) {
-            ds = DatasourceFactory.create("memory:tests");
+            ds = DatasourceFactory.create("memory:tests:");
         }
 
         return ds;
