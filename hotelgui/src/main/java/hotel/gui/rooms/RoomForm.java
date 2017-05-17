@@ -77,7 +77,7 @@ public class RoomForm extends BaseView
         int capacity = 0;
         try {
             capacity = Integer.parseInt(capacityField.getText());
-            if(capacity < 0) {
+            if(capacity <= 0) {
                 throw new NumberFormatException();
             }
         } catch(NumberFormatException e) {
