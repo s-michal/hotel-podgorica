@@ -3,7 +3,6 @@ package hotel.gui.reservations;
 import hotel.gui.BaseView;
 import hotel.gui.renderers.ButtonMouseListener;
 import hotel.gui.renderers.ButtonRenderer;
-import hotel.gui.rooms.RoomsModel;
 import hotel.model.CustomerManager;
 import hotel.model.HotelManager;
 import hotel.model.Reservation;
@@ -20,7 +19,6 @@ public class ReservationList extends BaseView
 {
 
     private ReservationsModel model;
-    private HotelManager hotelManager;
     private RoomManager roomManager;
     private CustomerManager customerManager;
 
@@ -34,7 +32,6 @@ public class ReservationList extends BaseView
         Objects.requireNonNull(roomManager);
         Objects.requireNonNull(customerManager);
 
-        this.hotelManager = hotelManager;
         this.roomManager = roomManager;
         this.customerManager = customerManager;
 
@@ -74,12 +71,9 @@ public class ReservationList extends BaseView
 
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        ReservationForm view = new ReservationForm(hotelManager, roomManager, customerManager);
+        ReservationForm view = new ReservationForm(model, roomManager, customerManager);
 
-        view.onSuccess(() -> {
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-            ((RoomsModel) table.getModel()).invalidate();
-        });
+        view.onSuccess(() -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
 
         frame.setContentPane(view.getPanel());
 

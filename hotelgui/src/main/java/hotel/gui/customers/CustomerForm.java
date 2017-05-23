@@ -1,47 +1,45 @@
-package hotel.gui.rooms;
+package hotel.gui.customers;
 
 import hotel.gui.BaseView;
-import hotel.workers.CallbackWorker;
+import hotel.gui.rooms.RoomsModel;
+import hotel.model.Customer;
 import hotel.model.Room;
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.DuplicateRoomNumberException;
+import hotel.workers.CallbackWorker;
 
 import javax.swing.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class RoomForm extends BaseView
+public class CustomerForm extends BaseView
 {
-
-    private RoomsModel model;
-    private JTextField numberField;
-    private JComboBox floorCombobox;
     private JPanel panel;
-    private JTextField capacityField;
-    private JTextField priceField;
-    private JLabel numberLabel;
-    private JLabel floorLabel;
-    private JLabel capacityLabel;
-    private JLabel priceLabel;
-    private JButton button1;
+    private JTextField nameField;
+    private JLabel nameLabel;
+    private JLabel birthDateLabel;
+    private JComboBox birthDateCombobox;
+    private JLabel addressLabel;
+    private JTextField addressField;
+    private JButton submitButton;
     private JTextPane errorsContainer;
+
+    private CustomersModel model;
 
     private Runnable onSuccess;
 
-    RoomForm(RoomsModel model, Room room)
+    CustomerForm(CustomersModel model, Customer customer)
     {
         Objects.requireNonNull(model);
         this.model = model;
-        numberLabel.setText(translate("roomNumber"));
-        floorLabel.setText(translate("roomFloor"));
-        capacityLabel.setText(translate("roomCapacity"));
-        priceLabel.setText(translate("roomPrice"));
-        button1.setText(translate("createButton"));
+        nameLabel.setText(translate("customerName"));
+        birthDateLabel.setText(translate("customerBirthDate"));
+        addressLabel.setText(translate("customerAddress"));
 
-        if(room != null) {
-            numberField.setText(""+room.getNumber());
-            floorCombobox.setSelectedIndex(room.getFloor() - 1);
+        if(customer != null) {
+            nameField.setText(customer.getName());
+            birthDateCombobox.setSelectedIndex(room.getFloor() - 1);
             capacityField.setText(""+room.getCapacity());
             priceField.setText(room.getPricePerDay().toString());
         }
@@ -128,6 +126,4 @@ public class RoomForm extends BaseView
             errorsContainer.setText(String.join("\n", errors));
             errorsContainer.setVisible(true);
         }
-    }
-
 }

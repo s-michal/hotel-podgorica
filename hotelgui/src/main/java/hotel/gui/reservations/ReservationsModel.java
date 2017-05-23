@@ -4,7 +4,6 @@ import hotel.gui.BaseModel;
 import hotel.model.HotelManager;
 import hotel.model.Reservation;
 import hotel.model.exceptions.ReservationCannotBeCanceledNow;
-import org.mockito.cglib.core.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +66,7 @@ public class ReservationsModel extends BaseModel<Reservation>
         } catch(ReservationCannotBeCanceledNow e) {
             throw e;
         } finally {
-            invalidate();
+            reload();
         }
     }
 
@@ -86,10 +85,18 @@ public class ReservationsModel extends BaseModel<Reservation>
         return this.reservations;
     }
 
-    private void invalidate()
+    public void reload()
     {
         this.reservations = null;
+        getReservations();
         fireTableDataChanged();
+    }
+
+    public void placeReservation(Reservation reservation)
+    {
+        Objects.requireNonNull(reservation);
+        manager.placeReservation(reservation);
+        reload();
     }
 
 }

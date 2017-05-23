@@ -1,12 +1,14 @@
 package hotel.gui.reservations;
 
 import hotel.gui.BaseView;
-import hotel.gui.renderers.*;
 import hotel.gui.renderers.ListCellRenderer;
+import hotel.workers.CallbackWorker;
 import hotel.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Vector;
@@ -14,31 +16,29 @@ import java.util.Vector;
 public class ReservationForm extends BaseView
 {
 
-    private HotelManager hotelManager;
-    private RoomManager roomManager;
-    private CustomerManager customerManager;
+    private ReservationsModel model;
 
     private Runnable onSuccess;
-    private JPanel errorsContainer;
     private JComboBox<Customer> customerCombobox;
     private JLabel customerLabel;
     private JLabel roomLabel;
     private JComboBox<Room> roomCombobox;
-    private JComboBox sinceCombobox;
-    private JComboBox untilCombobox;
+    private JComboBox<LocalDate> sinceCombobox;
+    private JComboBox<LocalDate> untilCombobox;
     private JLabel sinceLabel;
     private JLabel untilLabel;
     private JPanel panel;
     private JButton submitButton;
+    private JTextPane errorsContainer;
 
-    ReservationForm(HotelManager hotelManager, RoomManager roomManager, CustomerManager customerManager)
+    private static Logger logger = LoggerFactory.getLogger(ReservationForm.class);
+
+    ReservationForm(ReservationsModel model, RoomManager roomManager, CustomerManager customerManager)
     {
-        Objects.requireNonNull(hotelManager);
+        Objects.requireNonNull(model);
         Objects.requireNonNull(roomManager);
         Objects.requireNonNull(customerManager);
-        this.hotelManager = hotelManager;
-        this.roomManager = roomManager;
-        this.customerManager = customerManager;
+        this.model = model;
 
 
         customerLabel.setText(translate("customer"));
@@ -54,6 +54,10 @@ public class ReservationForm extends BaseView
 
         roomCombobox.setModel(new DefaultComboBoxModel<>(new Vector<>(roomManager.findAll())));
         roomCombobox.setRenderer(new ListCellRenderer<>(r -> ""+r.getNumber(), Room.class));
+
+        sinceCombobox.setModel(new DefaultComboBoxModel<>(getDates(7)));
+        untilCombobox.setModel(new DefaultComboBoxModel<>(getDates(14)));
+
         submitButton.addActionListener(e -> create());
     }
 
@@ -68,66 +72,38 @@ public class ReservationForm extends BaseView
         this.onSuccess = onSuccess;
     }
 
+    private Vector<LocalDate> getDates(int daysCount)
+    {
+        Vector<LocalDate> dates = new Vector<>(daysCount);
+
+        LocalDate today = LocalDate.now();
+
+        for(int i = 0; i < daysCount; i++) {
+            dates.add(today.plusDays(i));
+        }
+
+        return dates;
+    }
+
     private void create()
     {
         ArrayList<String> errors = new ArrayList<>();
-        //
-//        long number = 0;
-//
-//        try {
-//            number = Long.parseLong(numberField.getText());
-//            if(number < 1) {
-//                throw new NumberFormatException();
-//            }
-//        } catch(NumberFormatException e) {
-//            errors.add(translate("errors.room.invalidNumber"));
-//        }
-//
-//        int capacity = 0;
-//        try {
-//            capacity = Integer.parseInt(capacityField.getText());
-//            if(capacity < 0) {
-//                throw new NumberFormatException();
-//            }
-//        } catch(NumberFormatException e) {
-//            errors.add(translate("erorrs.room.invalidCapacity"));
-//        }
-//
-//        int floor = floorCombobox.getSelectedIndex() + 1;
-//
-//        BigDecimal price = null;
-//        try {
-//            double tempPrice = Double.parseDouble(priceField.getText());
-//            if(tempPrice < 0) {
-//                throw new NumberFormatException();
-//            }
-//            price = BigDecimal.valueOf(tempPrice);
-//        } catch(NumberFormatException e) {
-//            errors.add(translate("erorrs.room.invalidPrice"));
-//        }
-//
-//        if(errors.isEmpty()) {
-//            try {
-//                if(room != null) {
-//                    room.update(number, capacity, floor, price);
-//                    roomManager.update(room);
-//                } else {
-//                    roomManager.create(new Room(number, capacity, floor, price));
-//                }
-//            } catch(DuplicateRoomNumberException e) {
-//                errors.add(translate("erorrs.room.duplicateNumber"));
-//            } catch(ApplicationException e) {
-//                errors.add(translate("erorrs.general.unknown"));
-//            }
-//        }
-//
-//        errorsContainer.setText(String.join("\n", errors));
-//
-//        if(errors.isEmpty()) {
-//            if(onSuccess != null) {
-//                onSuccess.run();
-//            }
-//        }
+
+        Room room = Room.class.cast(roomCombobox.getSelectedItem());
+        Customer customer = Customer.class.cast(customerCombobox.getSelectedItem());
+
+        LocalDate since = LocalDate.class.cast(sinceCombobox.getSelectedItem());
+        LocalDate until = LocalDate.class.cast(untilCombobox.getSelectedItem());
+
+        if(until.isAfter(since)) {
+            logger.info("Creating reservation...");
+            new CallbackWorker(() -> model.placeReservation(new Reservation(room, customer, since, until)), onSuccess).run();
+        } else {
+            errors.add("errors.reservation.sinceAfterUntil");
+            logger.error("Reservation wasn't created");
+        }
+
+        errorsContainer.setText(String.join("\n", errors));
     }
 
 }

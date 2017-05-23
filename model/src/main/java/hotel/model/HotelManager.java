@@ -17,7 +17,7 @@ public interface HotelManager
 
     List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException;
 
-    void placeReservation(Reservation reservation) throws ApplicationException;
+    void placeReservation(Reservation reservation);
 
     void delete(Reservation reservation) throws ReservationNotFoundException;
 

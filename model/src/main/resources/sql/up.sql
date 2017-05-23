@@ -16,7 +16,7 @@ CREATE TABLE "room" (
 CREATE TABLE "reservation" (
   "id" BIGINT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   "room_id" BIGINT NOT NULL,
-  "customer_id" BIGINT NOT NULL UNIQUE,
+  "customer_id" BIGINT NOT NULL,
   "since" DATE NOT NULL,
   "until" DATE NOT NULL,
   "canceled" BOOLEAN NOT NULL

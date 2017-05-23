@@ -4,6 +4,8 @@ import hotel.gui.BaseModel;
 import hotel.model.HotelManager;
 import hotel.model.Room;
 import hotel.model.RoomManager;
+import hotel.model.exceptions.ApplicationException;
+import hotel.model.exceptions.DuplicateRoomNumberException;
 import hotel.model.exceptions.RoomHasReservationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,7 @@ public class RoomsModel extends BaseModel<Room>
     public void invalidate()
     {
         rooms = null;
+        getRooms();
         fireTableDataChanged();
     }
 
@@ -83,6 +86,18 @@ public class RoomsModel extends BaseModel<Room>
     public boolean hasReservations(Room room)
     {
         return hotelManager.findReservationByRoom(room).size() > 0;
+    }
+
+    public void createRoom(Room room) throws ApplicationException, DuplicateRoomNumberException
+    {
+        manager.create(room);
+        invalidate();
+    }
+
+    public void updateRoom(Room room) throws ApplicationException
+    {
+        manager.update(room);
+        invalidate();
     }
 
     private List<Room> getRooms()

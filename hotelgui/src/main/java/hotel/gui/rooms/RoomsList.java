@@ -8,6 +8,8 @@ import hotel.model.HotelManager;
 import hotel.model.Room;
 import hotel.model.RoomManager;
 import hotel.model.exceptions.RoomHasReservationException;
+import hotel.workers.CallbackWorker;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,9 +19,6 @@ import java.util.Objects;
 
 public class RoomsList extends BaseView
 {
-
-    private RoomManager roomManager;
-
     private JPanel topPanel;
     private JTable table;
     private JButton createNewRoomButton;
@@ -30,8 +29,6 @@ public class RoomsList extends BaseView
     {
         Objects.requireNonNull(roomManager);
         Objects.requireNonNull(hotelManager);
-
-        this.roomManager = roomManager;
 
         model = new RoomsModel(roomManager, hotelManager);
 
@@ -58,12 +55,9 @@ public class RoomsList extends BaseView
 
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        RoomForm view = new RoomForm(roomManager, room);
+        RoomForm view = new RoomForm(model, room);
 
-        view.onSuccess(() -> {
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-            ((RoomsModel) table.getModel()).invalidate();
-        });
+        view.onSuccess(() -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
 
         frame.setContentPane(view.getPanel());
 
@@ -87,12 +81,16 @@ public class RoomsList extends BaseView
             return button;
         }
 
-        button.addActionListener(x -> {
-            try {
-                model.deleteRoom(room);
-            } catch (RoomHasReservationException e) {
-            }
-        });
+        button.addActionListener(x ->
+            new CallbackWorker(() -> {
+                try {
+                    model.deleteRoom(room);
+                } catch(RoomHasReservationException e) {
+                    showMessageDialog(null, translate("errors.rooms.hasReservations"));
+                }
+            }, null).run()
+
+        );
 
         return button;
     }

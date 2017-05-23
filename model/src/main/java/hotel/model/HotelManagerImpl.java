@@ -95,10 +95,17 @@ public class HotelManagerImpl implements HotelManager
         }
     }
 
-    public void placeReservation(Reservation reservation) throws ApplicationException
+    public void placeReservation(Reservation reservation)
     {
         Objects.requireNonNull(reservation);
-        long id = persister.insert(reservation);
+        long id;
+        try {
+            id = persister.insert(reservation);
+        } catch(ApplicationException e) {
+            String message = "Reservation couldn't be persisted";
+            logger.error(message, e);
+            throw new RuntimeException(message, e);
+        }
         reservation.setId(id);
     }
 
