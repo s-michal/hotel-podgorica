@@ -17,7 +17,11 @@ public class MainView extends BaseView
         Objects.requireNonNull(context);
         this.context = context;
 
-        ReservationList reservationList = new ReservationList(context.getHotelManager());
+        ReservationList reservationList = new ReservationList(
+                context.getHotelManager(),
+                context.getRoomManager(),
+                context.getCustomerManager()
+        );
         panel.addTab(translate("tabs.Reservations"), null, reservationList.getPanel());
 
         RoomsList roomsList = new RoomsList(context.getRoomManager(), context.getHotelManager());

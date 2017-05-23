@@ -1,9 +1,9 @@
 package hotel.gui.rooms;
 
 import hotel.gui.BaseView;
-import hotel.gui.cellRenderers.ButtonMouseListener;
-import hotel.gui.cellRenderers.ButtonRenderer;
-import hotel.gui.cellRenderers.PriceCellRenderer;
+import hotel.gui.renderers.ButtonMouseListener;
+import hotel.gui.renderers.ButtonRenderer;
+import hotel.gui.renderers.PriceCellRenderer;
 import hotel.model.HotelManager;
 import hotel.model.Room;
 import hotel.model.RoomManager;

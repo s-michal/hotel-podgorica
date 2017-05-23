@@ -1,4 +1,4 @@
-package hotel.gui.cellRenderers;
+package hotel.gui.renderers;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
