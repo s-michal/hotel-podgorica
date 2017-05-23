@@ -64,14 +64,6 @@
               <text value="Label"/>
             </properties>
           </component>
-          <component id="82819" class="javax.swing.JComboBox" binding="sinceCombobox">
-            <constraints>
-              <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="300" height="-1"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
           <component id="77a77" class="javax.swing.JLabel" binding="untilLabel">
             <constraints>
               <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="2" fill="0" indent="0" use-parent-layout="false">
@@ -81,14 +73,6 @@
             <properties>
               <text value="Label"/>
             </properties>
-          </component>
-          <component id="aa80c" class="javax.swing.JComboBox" binding="untilCombobox">
-            <constraints>
-              <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="300" height="-1"/>
-              </grid>
-            </constraints>
-            <properties/>
           </component>
           <component id="162ff" class="javax.swing.JButton" binding="submitButton" default-binding="true">
             <constraints>
@@ -104,6 +88,22 @@
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="50"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="b7eb9" class="net.sourceforge.jdatepicker.impl.JDatePickerImpl" binding="sinceDatePicker" custom-create="true">
+            <constraints>
+              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="300" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="faaad" class="net.sourceforge.jdatepicker.impl.JDatePickerImpl" binding="untilDatePicker" custom-create="true">
+            <constraints>
+              <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="300" height="-1"/>
               </grid>
             </constraints>
             <properties/>

@@ -2,8 +2,12 @@ package hotel.gui.reservations;
 
 import hotel.gui.BaseView;
 import hotel.gui.renderers.ListCellRenderer;
+import hotel.utils.DateUtils;
 import hotel.workers.CallbackWorker;
 import hotel.model.*;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +27,13 @@ public class ReservationForm extends BaseView
     private JLabel customerLabel;
     private JLabel roomLabel;
     private JComboBox<Room> roomCombobox;
-    private JComboBox<LocalDate> sinceCombobox;
-    private JComboBox<LocalDate> untilCombobox;
     private JLabel sinceLabel;
     private JLabel untilLabel;
     private JPanel panel;
     private JButton submitButton;
     private JTextPane errorsContainer;
+    private JDatePickerImpl sinceDatePicker;
+    private JDatePickerImpl untilDatePicker;
 
     private static Logger logger = LoggerFactory.getLogger(ReservationForm.class);
 
@@ -54,9 +58,6 @@ public class ReservationForm extends BaseView
 
         roomCombobox.setModel(new DefaultComboBoxModel<>(new Vector<>(roomManager.findAll())));
         roomCombobox.setRenderer(new ListCellRenderer<>(r -> ""+r.getNumber(), Room.class));
-
-        sinceCombobox.setModel(new DefaultComboBoxModel<>(getDates(7)));
-        untilCombobox.setModel(new DefaultComboBoxModel<>(getDates(14)));
 
         submitButton.addActionListener(e -> create());
     }
@@ -92,10 +93,10 @@ public class ReservationForm extends BaseView
         Room room = Room.class.cast(roomCombobox.getSelectedItem());
         Customer customer = Customer.class.cast(customerCombobox.getSelectedItem());
 
-        LocalDate since = LocalDate.class.cast(sinceCombobox.getSelectedItem());
-        LocalDate until = LocalDate.class.cast(untilCombobox.getSelectedItem());
+        LocalDate since = DateUtils.getDatePickerValue(sinceDatePicker);
+        LocalDate until = DateUtils.getDatePickerValue(untilDatePicker);
 
-        if(until.isAfter(since)) {
+        if(since != null && until != null && until.isAfter(since)) {
             logger.info("Creating reservation...");
             new CallbackWorker(() -> model.placeReservation(new Reservation(room, customer, since, until)), onSuccess).run();
         } else {
@@ -104,6 +105,12 @@ public class ReservationForm extends BaseView
         }
 
         errorsContainer.setText(String.join("\n", errors));
+    }
+
+    private void createUIComponents()
+    {
+        sinceDatePicker = new JDatePickerImpl(new JDatePanelImpl(new UtilDateModel()));
+        untilDatePicker = new JDatePickerImpl(new JDatePanelImpl(new UtilDateModel()));
     }
 
 }

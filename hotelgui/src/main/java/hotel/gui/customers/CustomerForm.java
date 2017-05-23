@@ -2,9 +2,16 @@ package hotel.gui.customers;
 
 import hotel.gui.BaseView;
 import hotel.model.Customer;
-import hotel.model.Room;
+import hotel.model.exceptions.ApplicationException;
+import hotel.utils.DateUtils;
+import hotel.workers.CallbackWorker;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class CustomerForm extends BaseView
@@ -13,11 +20,11 @@ public class CustomerForm extends BaseView
     private JTextField nameField;
     private JLabel nameLabel;
     private JLabel birthDateLabel;
-    private JComboBox birthDateCombobox;
     private JLabel addressLabel;
     private JTextField addressField;
     private JButton submitButton;
     private JTextPane errorsContainer;
+    private JDatePickerImpl birthDateField;
 
     private CustomersModel model;
 
@@ -33,7 +40,7 @@ public class CustomerForm extends BaseView
 
         if(customer != null) {
             nameField.setText(customer.getName());
-           // birthDateCombobox.setSelectedIndex(birthDateCombobox);
+            ((UtilDateModel)birthDateField.getModel()).setValue(DateUtils.asDate(customer.getBirthDate()));
             addressField.setText(customer.getAddress());
         }
 
@@ -55,71 +62,58 @@ public class CustomerForm extends BaseView
 
     private void createOrUpdate(Customer customer)
     {
-//        ArrayList<String> errors = new ArrayList<>();
-//
-//        long number = 0;
-//
-//        try {
-//            number = Long.parseLong(numberField.getText());
-//            if(number < 1) {
-//                throw new NumberFormatException();
-//            }
-//        } catch(NumberFormatException e) {
-//            errors.add(translate("errors.room.invalidNumber"));
-//        }
-//
-//        int capacity = 0;
-//        try {
-//            capacity = Integer.parseInt(capacityField.getText());
-//            if(capacity <= 0) {
-//                throw new NumberFormatException();
-//            }
-//        } catch(NumberFormatException e) {
-//            errors.add(translate("erorrs.room.invalidCapacity"));
-//        }
-//
-//        int floor = floorCombobox.getSelectedIndex() + 1;
-//
-//        BigDecimal price = null;
-//        try {
-//            double tempPrice = Double.parseDouble(priceField.getText());
-//            if(tempPrice < 0) {
-//                throw new NumberFormatException();
-//            }
-//            price = BigDecimal.valueOf(tempPrice);
-//        } catch(NumberFormatException e) {
-//            errors.add(translate("erorrs.room.invalidPrice"));
-//        }
-//
-//        if(errors.isEmpty()) {
-//            Runnable callback;
-//            errorsContainer.setVisible(false);
-//            if(room != null) {
-//                room.update(number, capacity, floor, price);
-//                callback = () -> {
-//                    try {
-//                        model.updateRoom(room);
-//                    } catch(ApplicationException e) {
-//                        errors.add(translate("errors.general.unknown"));
-//                    }
-//                };
-//
-//            } else {
-//                Room newRoom = new Room(number, capacity, floor, price);
-//                callback = () -> {
-//                    try {
-//                        model.createRoom(newRoom);
-//                    } catch(ApplicationException e) {
-//                        errors.add(translate("erorrs.general.unknown"));
-//                    } catch(DuplicateRoomNumberException e) {
-//                        errors.add(translate("erorrs.room.duplicateNumber"));
-//                    }
-//                };
-//            }
-//            new CallbackWorker(callback, onSuccess).run();
-//        } else {
-//            errorsContainer.setText(String.join("\n", errors));
-//            errorsContainer.setVisible(true);
-//        }
+        ArrayList<String> errors = new ArrayList<>();
+
+        String name = nameField.getText();
+        String address = addressField.getText();
+        LocalDate birthDate = DateUtils.getDatePickerValue(birthDateField);
+
+        if(name == null || name.equals("")) {
+            errors.add(translate("errors.customer.emptyName"));
+        }
+
+        if(address == null || address.equals("")) {
+            errors.add(translate("errors.customer.emptyAddress"));
+        }
+
+        if(birthDate == null || ! birthDate.isBefore(LocalDate.now())) {
+            errors.add(translate("errors.customer.invalidBirthDate"));
+        }
+
+        if(errors.isEmpty()) {
+            Runnable callback;
+            errorsContainer.setVisible(false);
+            if(customer != null) {
+                customer.update(name, address, birthDate);
+                callback = () -> {
+                    try {
+                        model.updateCustomer(customer);
+                    } catch(ApplicationException e) {
+                        errors.add(translate("errors.general.unknown"));
+                    }
+                };
+
+            } else {
+                Customer newCustomer = new Customer(name, address, birthDate);
+                callback = () -> {
+                    try {
+                        model.createCustomer(newCustomer);
+                    } catch(ApplicationException e) {
+                        errors.add(translate("erorrs.general.unknown"));
+                    }
+                };
+            }
+            new CallbackWorker(callback, onSuccess).run();
+        } else {
+            errorsContainer.setText(String.join("\n", errors));
+            errorsContainer.setVisible(true);
+        }
     }
+
+    private void createUIComponents()
+    {
+        birthDateField = new JDatePickerImpl(new JDatePanelImpl(new UtilDateModel()));
+    }
+
+
 }

@@ -31,7 +31,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="Number"/>
+              <text value="Name"/>
             </properties>
           </component>
           <component id="cd172" class="javax.swing.JLabel" binding="birthDateLabel">
@@ -41,24 +41,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="Floor"/>
-            </properties>
-          </component>
-          <component id="90e3a" class="javax.swing.JComboBox" binding="birthDateCombobox">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="300" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <model>
-                <item value="1"/>
-                <item value="2"/>
-                <item value="3"/>
-                <item value="4"/>
-                <item value="5"/>
-              </model>
-              <toolTipText value=""/>
+              <text value="Birth date"/>
             </properties>
           </component>
           <vspacer id="1596e">
@@ -73,7 +56,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="Capacity"/>
+              <text value="Address"/>
             </properties>
           </component>
           <component id="35f4a" class="javax.swing.JTextField" binding="addressField">
@@ -108,6 +91,14 @@
             <properties>
               <text value=""/>
             </properties>
+          </component>
+          <component id="139e1" class="net.sourceforge.jdatepicker.impl.JDatePickerImpl" binding="birthDateField" custom-create="true" default-binding="true">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="300" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
           </component>
         </children>
       </grid>

@@ -87,6 +87,11 @@
             <artifactId>ideauidesigner-maven-plugin</artifactId>
             <version>1.0-beta-1</version>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jdatepicker</groupId>
+            <artifactId>jdatepicker</artifactId>
+            <version>1.3.2</version>
+        </dependency>
     </dependencies>
 
 
