@@ -3,12 +3,15 @@ package hotel.gui.customers;
 import hotel.gui.BaseView;
 import hotel.gui.renderers.ButtonMouseListener;
 import hotel.gui.renderers.ButtonRenderer;
+import hotel.gui.rooms.RoomForm;
 import hotel.model.*;
 import hotel.model.exceptions.CustomerHasReservationsException;
 import hotel.workers.CallbackWorker;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.util.Objects;
 
 public class CustomerList extends BaseView
@@ -45,18 +48,18 @@ public class CustomerList extends BaseView
     private void openFormFrame(Customer customer)
     {
         JFrame frame = new JFrame(translate("titles.newCustomer"));
-//
-//        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-//
-//        RoomForm view = new RoomForm(model, customer);
-//
-//        view.onSuccess(() -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
-//
-//        frame.setContentPane(view.getPanel());
-//
-//        frame.setPreferredSize(new Dimension(500, 400));
-//        frame.pack();
-//        frame.setVisible(true);
+
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        CustomerForm view = new CustomerForm(model, customer);
+
+        view.onSuccess(() -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
+
+        frame.setContentPane(view.getPanel());
+
+        frame.setPreferredSize(new Dimension(500, 400));
+        frame.pack();
+        frame.setVisible(true);
     }
 
     private JButton createUpdateButton(Customer customer)
