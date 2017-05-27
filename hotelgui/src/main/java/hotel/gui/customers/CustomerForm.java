@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class CustomerForm extends BaseView
 {
@@ -81,15 +82,17 @@ public class CustomerForm extends BaseView
         }
 
         if(errors.isEmpty()) {
-            Runnable callback;
+            Supplier<Boolean> callback;
             errorsContainer.setVisible(false);
             if(customer != null) {
                 customer.update(name, address, birthDate);
                 callback = () -> {
                     try {
                         model.updateCustomer(customer);
+                        return true;
                     } catch(ApplicationException e) {
                         errors.add(translate("errors.general.unknown"));
+                        return false;
                     }
                 };
 
@@ -98,8 +101,10 @@ public class CustomerForm extends BaseView
                 callback = () -> {
                     try {
                         model.createCustomer(newCustomer);
+                        return true;
                     } catch(ApplicationException e) {
                         errors.add(translate("erorrs.general.unknown"));
+                        return false;
                     }
                 };
             }

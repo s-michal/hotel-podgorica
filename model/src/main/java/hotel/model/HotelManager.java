@@ -2,10 +2,8 @@ package hotel.model;
 
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.ReservationNotFoundException;
+import hotel.model.exceptions.RoomHasReservationException;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 public interface HotelManager
@@ -17,7 +15,7 @@ public interface HotelManager
 
     List<Reservation> findCustomerReservations(Customer customer) throws ApplicationException;
 
-    void placeReservation(Reservation reservation);
+    void placeReservation(Reservation reservation) throws RoomHasReservationException;
 
     void delete(Reservation reservation) throws ReservationNotFoundException;
 

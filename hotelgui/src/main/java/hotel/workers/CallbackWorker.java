@@ -1,15 +1,17 @@
 package hotel.workers;
 
-import javax.swing.*;
+import javax.swing.SwingWorker;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
-public class CallbackWorker extends SwingWorker<Boolean, Void>
+public class CallbackWorker extends SwingWorker<Boolean, Boolean>
 {
 
-    private Runnable callback;
+    private Supplier<Boolean> callback;
     private Runnable after;
 
-    public CallbackWorker(Runnable callback, Runnable after)
+    public CallbackWorker(Supplier<Boolean> callback, Runnable after)
     {
         Objects.requireNonNull(callback);
         this.callback = callback;
@@ -19,15 +21,18 @@ public class CallbackWorker extends SwingWorker<Boolean, Void>
     @Override
     protected Boolean doInBackground() throws Exception
     {
-        callback.run();
-        return true;
+        return callback.get();
     }
 
     @Override
     protected void done()
     {
-        if(after != null) {
-            after.run();
+        try {
+            if(get() && after != null) {
+                after.run();
+            }
+        } catch(InterruptedException | ExecutionException e) {
+
         }
     }
 

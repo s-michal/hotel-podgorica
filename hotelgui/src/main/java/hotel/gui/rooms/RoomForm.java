@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class RoomForm extends BaseView
 {
@@ -99,15 +100,17 @@ public class RoomForm extends BaseView
         }
 
         if(errors.isEmpty()) {
-            Runnable callback;
+            Supplier<Boolean> callback;
             errorsContainer.setVisible(false);
             if(room != null) {
                 room.update(number, capacity, floor, price);
                 callback = () -> {
                     try {
                         model.updateRoom(room);
+                        return true;
                     } catch(ApplicationException e) {
                         errors.add(translate("errors.general.unknown"));
+                        return false;
                     }
                 };
 
@@ -116,11 +119,13 @@ public class RoomForm extends BaseView
                 callback = () -> {
                     try {
                         model.createRoom(newRoom);
+                        return true;
                     } catch(ApplicationException e) {
                         errors.add(translate("erorrs.general.unknown"));
                     } catch(DuplicateRoomNumberException e) {
                         errors.add(translate("erorrs.room.duplicateNumber"));
                     }
+                    return false;
                 };
             }
             new CallbackWorker(callback, onSuccess).run();

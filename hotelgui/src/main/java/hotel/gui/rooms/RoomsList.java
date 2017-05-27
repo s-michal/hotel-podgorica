@@ -85,8 +85,10 @@ public class RoomsList extends BaseView
             new CallbackWorker(() -> {
                 try {
                     model.deleteRoom(room);
+                    return true;
                 } catch(RoomHasReservationException e) {
                     showMessageDialog(null, translate("errors.rooms.hasReservations"));
+                    return false;
                 }
             }, null).run()
 

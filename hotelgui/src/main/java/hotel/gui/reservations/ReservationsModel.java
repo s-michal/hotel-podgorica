@@ -4,6 +4,7 @@ import hotel.gui.BaseModel;
 import hotel.model.HotelManager;
 import hotel.model.Reservation;
 import hotel.model.exceptions.ReservationCannotBeCanceledNow;
+import hotel.model.exceptions.RoomHasReservationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +93,7 @@ public class ReservationsModel extends BaseModel<Reservation>
         fireTableDataChanged();
     }
 
-    public void placeReservation(Reservation reservation)
+    public void placeReservation(Reservation reservation) throws RoomHasReservationException
     {
         Objects.requireNonNull(reservation);
         manager.placeReservation(reservation);

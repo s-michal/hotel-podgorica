@@ -3,16 +3,17 @@ package hotel.model;
 import hotel.model.database.Hydrator;
 import hotel.model.database.Persister;
 import hotel.model.database.ReservationHydrator;
+import hotel.model.database.Utils;
 import hotel.model.exceptions.ApplicationException;
 import hotel.model.exceptions.ReservationNotFoundException;
+import hotel.model.exceptions.RoomHasReservationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 public class HotelManagerImpl implements HotelManager
@@ -95,9 +96,14 @@ public class HotelManagerImpl implements HotelManager
         }
     }
 
-    public void placeReservation(Reservation reservation)
+    public void placeReservation(Reservation reservation) throws RoomHasReservationException
     {
         Objects.requireNonNull(reservation);
+
+        if(isRoomReserved(reservation.getRoom(), reservation.getSince(), reservation.getUntil())) {
+            throw new RoomHasReservationException("Room is reserved at time of reservation");
+        }
+
         long id;
         try {
             id = persister.insert(reservation);
@@ -253,9 +259,44 @@ public class HotelManagerImpl implements HotelManager
             return assocation;
 
         } catch (SQLException e) {
-            //logger.error("Find all was unsuccessful", e);
-            throw new ApplicationException(String.format("Couln't load data from %s", table), e);
+            String message = String.format("Couln't load data from %s", table);
+            logger.error(message, e);
+            throw new ApplicationException(message, e);
         }
+    }
+
+    private boolean isRoomReserved(Room room, LocalDate since, LocalDate until)
+    {
+        try (Connection conn = dataSource.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(
+                    "SELECT COUNT(*)" +
+                            "FROM \"reservation\"" +
+                            "WHERE \"room_id\" = ?" +
+                            "AND ((\"since\" BETWEEN ? AND ?) OR (\"until\" BETWEEN ? AND ?)" +
+                            "OR (? BETWEEN \"since\" AND \"until\") OR (? BETWEEN \"since\" AND \"until\"))"
+            );
+
+            Date sinceDate = Utils.toSqlDate(since);
+            Date untilDate = Utils.toSqlDate(until);
+
+
+            statement.setLong(1, room.getId());
+            statement.setDate(2, sinceDate);
+            statement.setDate(3, untilDate);
+            statement.setDate(4, sinceDate);
+            statement.setDate(5, untilDate);
+            statement.setDate(6, sinceDate);
+            statement.setDate(7, untilDate);
+
+            ResultSet result = statement.executeQuery();
+            if(result.next()) {
+                return result.getInt(1) != 0;
+            }
+        } catch (SQLException e) {
+            logger.error(String.format("SQL ERROR: %s", e.getMessage()), e);
+        }
+
+        return false;
     }
 
 }

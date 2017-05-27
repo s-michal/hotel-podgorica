@@ -81,8 +81,10 @@ public class CustomerList extends BaseView
                 new CallbackWorker(() -> {
                     try {
                         model.deleteCustomer(customer);
+                        return true;
                     } catch(CustomerHasReservationsException e) {
                         showMessageDialog(null, translate("errors.customer.hasReservations"));
+                        return false;
                     }
                 }, null).run()
 

@@ -2,6 +2,7 @@ package hotel.gui.reservations;
 
 import hotel.gui.BaseView;
 import hotel.gui.renderers.ListCellRenderer;
+import hotel.model.exceptions.RoomHasReservationException;
 import hotel.utils.DateUtils;
 import hotel.workers.CallbackWorker;
 import hotel.model.*;
@@ -60,6 +61,8 @@ public class ReservationForm extends BaseView
         roomCombobox.setRenderer(new ListCellRenderer<>(r -> ""+r.getNumber(), Room.class));
 
         submitButton.addActionListener(e -> create());
+
+        errorsContainer.setVisible(false);
     }
 
     @Override
@@ -88,8 +91,8 @@ public class ReservationForm extends BaseView
 
     private void create()
     {
+        errorsContainer.setVisible(false);
         ArrayList<String> errors = new ArrayList<>();
-
         Room room = Room.class.cast(roomCombobox.getSelectedItem());
         Customer customer = Customer.class.cast(customerCombobox.getSelectedItem());
 
@@ -98,13 +101,24 @@ public class ReservationForm extends BaseView
 
         if(since != null && until != null && until.isAfter(since)) {
             logger.info("Creating reservation...");
-            new CallbackWorker(() -> model.placeReservation(new Reservation(room, customer, since, until)), onSuccess).run();
+            new CallbackWorker(() -> {
+                try {
+                    model.placeReservation(new Reservation(room, customer, since, until));
+                    return true;
+                } catch(RoomHasReservationException e) {
+                    errors.add(translate("errors.reservation.roomHasReservation"));
+                    return false;
+                }
+            }, onSuccess).run();
         } else {
-            errors.add("errors.reservation.sinceAfterUntil");
+            errors.add(translate("errors.reservation.sinceAfterUntil"));
             logger.error("Reservation wasn't created");
         }
 
-        errorsContainer.setText(String.join("\n", errors));
+        if(!errors.isEmpty()) {
+            errorsContainer.setText(String.join("\n", errors));
+            errorsContainer.setVisible(true);
+        }
     }
 
     private void createUIComponents()
