@@ -100,7 +100,7 @@ public class ReservationsServlet extends BaseServlet
 
     private ReservationForm createForm(HttpServletRequest request)
     {
-        return new ReservationForm(request, getHotelManager(), getCustomerManager(), getRoomManager());
+        return new ReservationForm(getHotelManager(), getCustomerManager(), getRoomManager());
     }
 
     /**

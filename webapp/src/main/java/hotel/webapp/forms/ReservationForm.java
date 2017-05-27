@@ -1,10 +1,7 @@
 package hotel.webapp.forms;
 
 import hotel.model.*;
-import hotel.model.exceptions.ApplicationException;
-import hotel.model.exceptions.ReservationNotFoundException;
-import hotel.model.exceptions.RoomNotFoundException;
-import hotel.model.exceptions.CustomerNotFoundException;
+import hotel.model.exceptions.*;
 import hotel.webapp.forms.exceptions.ValidationException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,20 +11,17 @@ import java.util.Objects;
 
 public class ReservationForm
 {
-
-    private HttpServletRequest request;
     private HotelManager reservations;
     private CustomerManager customers;
     private RoomManager rooms;
 
-    public ReservationForm(HttpServletRequest request, HotelManager manager, CustomerManager customers, RoomManager rooms)
+    public ReservationForm(HotelManager manager, CustomerManager customers, RoomManager rooms)
     {
-        Objects.requireNonNull(request);
         Objects.requireNonNull(manager);
         Objects.requireNonNull(customers);
         Objects.requireNonNull(rooms);
 
-        this.request = request;
+
         this.reservations = manager;
         this.customers = customers;
         this.rooms = rooms;
@@ -65,13 +59,12 @@ public class ReservationForm
         Room room;
 
         try {
-            customer = customers.find(roomId);
+            customer = customers.find(customerId);
             room = rooms.find(roomId);
-        } catch (CustomerNotFoundException | RoomNotFoundException e) {
+            reservations.placeReservation(new Reservation(room, customer, since, until));
+        } catch (CustomerNotFoundException | RoomNotFoundException | RoomHasReservationException e) {
             throw new ValidationException(e.getMessage());
         }
-
-        reservations.placeReservation(new Reservation(room, customer, since, until));
     }
 
 }
